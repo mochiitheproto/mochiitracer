@@ -100,6 +100,7 @@
             erasing: "Borrando la memoria…",
             writing: "Escribiendo… {pct} %",
             done: "¡Listo! La cabeza se reinicia con el firmware nuevo.",
+            doneReplug: "Ya quedó escrito, pero la cabeza no se reinició sola: apágala y vuelve a prenderla (o desconecta y conecta el USB, si de ahí toma corriente) para que arranque con el firmware nuevo.",
             failed: "La instalación se detuvo ({detail}). No se rompió nada: pon el Teensy en modo bootloader otra vez y repite.",
 
             conTitle: "Consola serie (opcional)",
@@ -225,6 +226,7 @@
             erasing: "Erasing the flash…",
             writing: "Writing… {pct}%",
             done: "Done! The head restarts with the new firmware.",
+            doneReplug: "The firmware is written, but the head didn't restart by itself: turn it off and on again (or unplug and replug the USB, if that's what powers it) to start the new firmware.",
             failed: "The install stopped ({detail}). Nothing is broken: put the Teensy in bootloader mode again and retry.",
 
             conTitle: "Serial console (optional)",
@@ -350,6 +352,7 @@
             erasing: "正在擦除闪存…",
             writing: "正在写入… {pct}%",
             done: "完成！头套会用新固件重新启动。",
+            doneReplug: "固件已写入，但头套没有自动重启：请关机再开机（如果它是靠 USB 供电，就拔掉 USB 再插上），让它用新固件启动。",
             failed: "烧录中断（{detail}）。没有损坏任何东西：让 Teensy 重新进入 Bootloader 模式，再试一次。",
 
             conTitle: "串口控制台（可选）",

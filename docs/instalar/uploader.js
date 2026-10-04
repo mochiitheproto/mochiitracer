@@ -9,8 +9,8 @@
  *  - Intel HEX parsing -> 1 KB blocks (addresses relative to 0x60000000)
  *  - WebHID upload to the Teensy 4 bootloader (HalfKay): 1088-byte reports
  *    [3 address bytes + 61 zero + 1024 data], blank blocks skipped except the
- *    first, 1.5 s after the first block (erase), 5 ms after the rest,
- *    final 0xFF 0xFF 0xFF report to reboot.
+ *    first, 1.5 s after the first block (erase), final 0xFF 0xFF 0xFF report
+ *    to reboot.
  *
  * Changes (details in README.md):
  *  - Firmware comes from the mochiitheproto/mochiitracer releases, one .hex per
@@ -18,9 +18,12 @@
  *    no CORS headers, so the page first looks for a same-origin copy in
  *    firmware/<tag>/ and otherwise links the file for a manual download. When
  *    the release lists a SHA-256, the download is checked against it.
- *  - Fix: a refused report is retried for up to 20 s instead of 5 times in
- *    0.5 s. HalfKay refuses reports while the erase from the first block runs,
- *    and over a large old firmware that took longer than the 5 tries.
+ *  - Fix: a refused report is retried for up to 20 s (10 ms per KB of flash on
+ *    bigger boards) instead of 5 times in 0.5 s. HalfKay refuses reports while
+ *    the erase from the first block runs, and over a large old firmware that
+ *    took longer than the 5 tries. The page says it's erasing meanwhile, the
+ *    5 ms sleep after each block is gone (a hidden tab stretched it to 1 s),
+ *    and if the head doesn't restart by itself the page says to power-cycle it.
  *  - Fix: gaps in the HEX keep their address. The original compacted the block
  *    list with filter(), which moves every block after a gap to a wrong address.
  *  - The image is checked before anything is erased: Teensy 4 FlexSPI tag,
@@ -63,8 +66,12 @@
     const BLOCK_SIZE = 1024;
     const REPORT_SIZE = BLOCK_SIZE + 64; // 1088
     const FCFB_TAG = 0x42464346;         // "FCFB", FlexSPI config block at the start of flash
-    const RETRY_BUDGET_MS = 20000;       // per report; a 2 MB erase must fit (see sendReportWithRetries)
+    // Retries of a refused report (see sendReportWithRetries): at least 20 s, or 10 ms per KB of
+    // flash, which is over twice the erase time measured on a Teensy 4.0.
+    const RETRY_BUDGET_MS = 20000;
+    const RETRY_MS_PER_KB = 10;
     const RETRY_GAP_MS = 20;
+    const BOOT_BUDGET_MS = 2000;         // the reboot report: the head usually restarts before answering
     // Flash size at offset 0x50 of the FlexSPI config (cores/teensy4/bootdata.c) and the
     // usable code size teensy_loader_cli uses for each board.
     const BOARDS = {
@@ -344,18 +351,25 @@
         return report;
     }
 
+    // How long one report may be refused: the whole flash of the board erased, with margin.
+    function retryBudget(codeBytes) {
+        return Math.max(RETRY_BUDGET_MS, Math.ceil(codeBytes / 1024) * RETRY_MS_PER_KB);
+    }
+
     /**
      * Flash Teensy firmware:
      *  - WebHID open
      *  - skip 0xFF blocks except first
      *  - send block as [3 address bytes + 61 zero + 1024 data = 1088 total]
-     *  - small delay after each block
+     *  - 1.5 s after the first block (it starts the erase); refused reports are retried
      *  - final "magic bytes" 0xFF,0xFF,0xFF
+     * Returns false if the image went in but the head didn't restart by itself.
      * @param {Uint8Array[]} firmwarePages sparse, indexed by block number
      * @param {HIDDevice} device
-     * @param {(progress:number, phase:string)=>void} progressCb
+     * @param {(progress:number, phase:string)=>void} progressCb phase is "erase" or "write"
+     * @param {number} budgetMs how long one report may be refused
      */
-    async function flashFirmware(firmwarePages, device, progressCb) {
+    async function flashFirmware(firmwarePages, device, progressCb, budgetMs = RETRY_BUDGET_MS) {
         progressCb(0, "erase");
         if (!device.opened) await device.open();
 
@@ -363,24 +377,27 @@
             const plan = planBlocks(firmwarePages);
             for (let n = 0; n < plan.length; n++) {
                 const i = plan[n];
-                const success = await sendReportWithRetries(device, buildReport(i, firmwarePages[i]));
+                const p = n / plan.length;
+                // a refusal means it's still erasing: say that instead of a stuck percentage
+                const success = await sendReportWithRetries(device, buildReport(i, firmwarePages[i]), budgetMs,
+                    () => progressCb(p, "erase"));
                 if (!success) {
                     throw new Error(`Block upload failed at block index=${i}`);
                 }
-
-                // 1.5s after the first block (erase), 5ms for subsequent
-                await sleep(n === 0 ? 1500 : 5);
+                if (n === 0) await sleep(1500);
                 progressCb((n + 1) / plan.length, "write");
             }
 
-            // final "magic" = 0xFF,0xFF,0xFF
+            // final "magic" = 0xFF,0xFF,0xFF. If the head restarts before answering,
+            // the device goes away, and that counts as done too.
             const boot = new Uint8Array(REPORT_SIZE);
             boot[0] = 0xFF;
             boot[1] = 0xFF;
             boot[2] = 0xFF;
-            await sendReportWithRetries(device, boot);
+            const sent = await sendReportWithRetries(device, boot, BOOT_BUDGET_MS);
 
             await sleep(100);
+            return sent || !device.opened;
         } finally {
             await device.close().catch(() => {});
         }
@@ -390,19 +407,24 @@
      * Send a HID report, retrying until it goes through or the time runs out.
      * The first block starts an erase that runs in the background, and while it
      * lasts HalfKay refuses reports right away (NotAllowedError). The erase grows
-     * with the firmware that was there before (over 2 s for a 550 KB one), so a
-     * fixed number of tries isn't enough; teensy_loader_cli also keeps retrying.
+     * with the firmware that was there before (about 4 ms per KB on a Teensy 4.0,
+     * so 2.4 s for a 550 KB one), so a fixed number of tries isn't enough.
      */
-    async function sendReportWithRetries(device, data, budgetMs = RETRY_BUDGET_MS) {
-        const until = Date.now() + budgetMs;
+    async function sendReportWithRetries(device, data, budgetMs = RETRY_BUDGET_MS, onRefused = null) {
+        const start = Date.now();
         for (let attempt = 1; ; attempt++) {
             try {
                 await device.sendReport(0, data);
-                if (attempt > 1) console.info(`sendReport went through on attempt ${attempt}`);
+                if (attempt > 1) console.info(`sendReport went through after ${Date.now() - start} ms (${attempt} attempts)`);
                 return true;
             } catch (err) {
-                if (!device.opened || Date.now() >= until) {
-                    console.warn(`sendReport gave up after ${attempt} attempts`, err);
+                if (attempt === 1 && onRefused) onRefused();
+                if (!device.opened) {
+                    console.info("sendReport: the device went away", err);
+                    return false;
+                }
+                if (Date.now() - start >= budgetMs) {
+                    console.warn(`sendReport gave up after ${Date.now() - start} ms (${attempt} attempts)`, err);
                     return false;
                 }
                 await sleep(RETRY_GAP_MS);
@@ -920,16 +942,17 @@
         visor.setProgress(0);
         say("flash", "erasing");
         try {
-            await flashFirmware(blocks, S.device, (p, phase) => {
+            const booted = await flashFirmware(blocks, S.device, (p, phase) => {
                 bar.value = p;
                 visor.setProgress(p);
                 if (phase === "write") say("flash", "writing", { pct: Math.round(p * 100) });
-            });
+                else say("flash", "erasing");
+            }, retryBudget(cap));
             S.quietUntil = Date.now() + 8000;
             S.flashed = true;
             S.device = null; // it reboots into the new firmware
             bar.value = 1;
-            say("flash", "done", null, "ok");
+            say("flash", booted ? "done" : "doneReplug", null, "ok");
             visor.set("happy");
         } catch (e) {
             console.error(e);

@@ -160,12 +160,16 @@ exactly, and lines longer than 7 characters.
   have no gaps, so the reports sent for them are byte-identical to upstream's.)
 - **Fix:** HEX lines with non-hex characters passed the checksum (`parseInt` gives
   `NaN`, and `NaN & 0xFF` is 0). They're rejected now.
-- **Fix:** a refused report is retried for up to 20 s instead of 5 times 100 ms apart.
-  The first block starts an erase that HalfKay finishes in the background, refusing
-  reports (`NotAllowedError`) until it's done, and the erase takes longer the bigger
-  the old firmware was. Measured on a Teensy 4.0 over Linux: the third report was
-  refused for longer than the 5 tries over a 550 KB firmware, so the install stopped at
-  block 5. `teensy_loader_cli` also retries for seconds.
+- **Fix:** a refused report is retried for up to 20 s (10 ms per KB of flash on bigger
+  boards) instead of 5 times 100 ms apart. The first block starts an erase that HalfKay
+  finishes in the background, refusing reports (`NotAllowedError`) until it's done, and
+  the erase takes longer the bigger the old firmware was: about 4 ms per KB, measured on
+  a Teensy 4.0 under Linux. Over a 550 KB firmware the third report was refused for
+  longer than the 5 tries, so the install stopped at block 5; with the fix it went
+  through after about 0.9 s of retries. While it waits the page says it's erasing.
+- The 5 ms sleep after each block is gone (a refused report is retried anyway, and a
+  hidden tab stretched each sleep to a second). If the head doesn't restart after the
+  last report, the page says to power-cycle it instead of claiming it restarted.
 - The image is checked before erasing: FlexSPI `FCFB` tag (Teensy 4), board from the
   flash size at offset 0x50, size limit. The file name no longer has to contain
   `teensy40` (a PlatformIO `firmware.hex` was rejected before).
