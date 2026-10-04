@@ -1,0 +1,207 @@
+# NOTICE
+
+**MochiiTracer · Protogen OS is a modified version of ProtoTracer.**
+
+| | |
+|---|---|
+| Original work | [ProtoTracer](https://github.com/coelacant1/ProtoTracer) by coelacant1 (Coela Can't), GNU AGPL v3.0 |
+| Based on | `coelacant1/ProtoTracer@e75e67d` (`e75e67d6e40654c9691ca903ac5d9196bd05b0e7`) |
+| Modified by | Juls Denali / Tundra the furr / mochii the protogen |
+| Modified | April to October 2026 |
+| Date of this notice | 2026-10-04 |
+| License | GNU AGPL v3.0, the same as the original (see [`LICENSE`](LICENSE)) |
+
+This notice is the statement of modifications required by section 5(a) of the GNU Affero General
+Public License v3.0. The upstream copyright notices in the source files are kept. Third-party
+libraries that PlatformIO downloads keep their own licenses, and the few third-party files kept
+in this repository are listed under [Third-party material](#third-party-material).
+ProtoTracer's GitHub CI workflows were not carried over. The original README is kept in
+[`docs/README-upstream.md`](docs/README-upstream.md).
+
+## Main changes
+
+Paths are relative to `lib/ProtoTracer/` unless they start with `src/`, `tools/` or `docs/`.
+
+### Faces and the project (`Examples/Protogen/ProtogenHUB75Project.h`)
+
+- New face list with 17 faces. Kept from stock: DEFAULT, ANGRY, DOUBT, FROWN, LOOKUP, SAD,
+  AUDIO1 (audio-reactive gradient, same as upstream) and the spectrum analyzer, which upstream
+  calls AUDIO3 and this fork lists as AUDIO2. Upstream's AUDIO2, the oscilloscope, left the
+  button list; its code is still there and the stock Morse-button mode (`MORSEBUTTON`, untested
+  here) still maps it. New: BSOD, LOWBAT, TACHA, KAOMOJI, KP140, DEAD, AMOR, OWO and HAPPY.
+- The face count passed to the menu is derived from `faceArray`.
+- Boop reaction: faces 0–5 show Surprised and DEAD/AMOR/OWO/HAPPY show TACHA while booped. The
+  reaction is skipped when the boop sensor is disabled in the menu, so a face can no longer get
+  stuck on Surprised.
+- DEAD, AMOR, OWO and HAPPY pause blinking and mute the microphone visemes on every frame.
+- Image faces render on a new full-screen plane (`Assets/Models/OBJ/FullScreenPlane.h`). New
+  assets: `Assets/Textures/Static/LowBattery.h`, `Assets/Textures/Static/TestGrid.h` (a
+  calibration grid that no face shows), `Assets/Textures/Animated/Kaomoji/`,
+  `Assets/Textures/Animated/KaoPink140/`.
+- Serial command interface (one exact line per command): status, face, brightness, language,
+  panel calibration, screen off/on, captures of the camera, panels and OLED, boot replay, boop
+  and audio scopes, simulated temperature and a simulated boop for testing.
+
+### Face mesh (`Assets/Models/FBX/NukudeFlat.h`)
+
+- Nine new morph targets for the native faces: `DeadEye`, `DeadMouth`, `LoveFace`, `LoveBeat`,
+  `OwoEye`, `OwoMouth`, `OwoFix`, `HappyEyes`, `HappyMouth` (`morphCount` 26 → 35).
+
+### Boop
+
+- `Examples/Protogen/BoopGesture.h` (new): the "boop + boooop" gesture (a tap, then a second boop
+  held for 0.8 s) changes to the next face. It replaces the double-tap trigger, which fired on its
+  own.
+- `Examples/Protogen/BoopPresets.h`, `Examples/Protogen/BoopScript.h` (new): simulated boop
+  patterns for testing without touching the sensor. They are shared with the OLED simulator.
+- `ExternalDevices/Sensors/APDS9960.{h,cpp}`: the proximity register is read directly. A failed
+  I²C read keeps the previous value and is counted, instead of returning 156 (a phantom boop).
+  Read-only telemetry getters were added, and `ReadGesture()` is declared (gesture reading stays
+  disabled).
+
+### LED panels and screens
+
+- `Controller/HUB75Controller.{h,cpp}`, `Controller/ScreenSource.h` (new): faces keep the
+  software mirror. Text screens are drawn per panel in front view, so text reads correctly on
+  both panels. For the text screens only, the panel order and a horizontal mirror can be
+  calibrated (stored in EEPROM); faces don't use that calibration. The panels can be read back
+  in front view for captures.
+- `Assets/Screens/` (new): `BootScreen` ("PROTOGEN OS" / "PRIMAGEN OS" boot animation),
+  `BsodScreen` (parody blue screen with a working QR code), `CalScreen` (left/right test pattern),
+  `BlankScreen` (screen off), the `Font3x5` pixel font and `Especie.h` (the species name,
+  PROTOGEN or PRIMAGEN with `ESPECIE_PRIMAGEN`, shared by the screens and the OLED).
+
+### Inner OLED (`ExternalDevices/Displays/SSD1306.{h,cpp}`, `SoftAssets.{h,cpp}` new)
+
+- The HUD is redesigned as a small "visor": the live face and its name, a temperature warning
+  light with hysteresis, icon-based settings with no digits, a boop-gesture indicator, dimmed
+  contrast, a 1 px burn-in drift, and its own boot after the stock ProtoTracer/AGPL splash
+  (the species name and a greeting in the current language). The AGPL splash stays, shown for
+  0.9 s instead of 2.5 s; the Coela Can't logo splash before it was dropped. Fonts and icons are
+  generated by `tools/oled/`.
+- Interface texts in Spanish, English and Simplified Chinese: the default comes from the build
+  flag `IDIOMA_DEFECTO` and can be changed at runtime with the serial command `l<N>` (stored at
+  EEPROM address 201; `l255` goes back to the build's language). The Chinese glyphs come from
+  Fusion Pixel Font (see [Third-party material](#third-party-material)).
+
+### Build options
+
+- `-D IDIOMA_DEFECTO=0|1|2`: default language (Spanish, English, Simplified Chinese).
+- `-D ESPECIE_PRIMAGEN`: Primagen texts instead of Protogen (boot screen, blue screen, OLED
+  boot).
+- `platformio.ini`: every environment pins `platform = teensy@5.1.0` (upstream leaves the version
+  open). The newer `teensy` 6.x, with GCC 15, can't build SmartMatrix 4.0.3.
+
+### Project template, menu and engine
+
+- `Examples/Templates/ProtogenProjectTemplate.{h,cpp}`: members changed from `private` to
+  `protected` for derived projects. Color slot 2 is cyan (RGB 0, 255, 255) instead of orange. The
+  fan PWM is scaled so menu level 9 sends 255 (it was 225).
+- `ExternalDevices/InputDevices/Menu/Menu.{h,cpp}`: `NextFace()`, `PrevFace()`, `SetMenuValue()`.
+- `ExternalDevices/InputDevices/SingleButtonMenuHandler.{h,tpp}`: `GetMenuMax()`.
+- `Assets/Textures/Animated/Utils/ImageSequence.{h,cpp}`: `GetRGB()` takes const references and
+  is marked `override`, so it really overrides `Material::GetRGB()`. Also adds `SetIntensity()`.
+- `Scene/Materials/Static/Image.{h,cpp}`: `SetIntensity()` for fades.
+- `Scene/Materials/Special/Overlays/Text/Characters.{h,cpp}`: `@` draws a heart.
+- `src/main.cpp`: the hardware-test loop skips the NeoTrellis test, which hangs forever without a
+  NeoTrellis, and waits 2 s between scans.
+
+### Tools and documentation (new)
+
+- `tools/`: `flash.sh`, `captura.py`, `hostrender/` (the engine compiled for the host),
+  `oledsim/` (OLED simulator), `oled/` (OLED asset generator and the Chinese font subset),
+  image-to-face converters (`convert_webp_to_sequence.py`, `generate_video.py`), the generators
+  of KAOMOJI and KP140 (`generate_kaomoji.py`, `generate_kaomoji_bpm.py`), generic examples
+  (`generate_smile.py`, `generate_eyes.py`), the calibration-grid generator
+  (`generate_test_grid.py`), `led_preview.html`, `grabar-boop.sh`, `grabar-audio.sh`,
+  `apagada-hasta.py`.
+- `docs/instalar/`: web installer (WebHID and WebSerial), adapted from ProtoTracer's firmware
+  uploader (`.docs/prototracer-firmware-uploader.*`).
+- `README.md` (replaced; available in English, Spanish and Simplified Chinese), `NOTICE.md`,
+  `docs/LEARNINGS.md` (development notes), `docs/README-upstream.md` (the original README).
+- `.gitignore`: ignores `__pycache__/` and the export script's marker file.
+
+## Third-party material
+
+### Libraries compiled into the `.hex`
+
+PlatformIO downloads the libraries at build time, each under its own license; their source is not
+in this repository. Each release `.hex` contains compiled code from some of them: PJRC's
+Teensyduino core and its Wire, SPI and EEPROM libraries (PJRC's permissive license; the String
+and Stream classes and those three libraries are under the GNU LGPL 2.1 or later), Adafruit GFX,
+Adafruit SSD1306 and Adafruit APDS9960 (BSD), Adafruit BusIO (MIT) and SmartMatrix (MIT). Their
+copyright notices and license texts are in [`THIRD-PARTY-NOTICES.txt`](THIRD-PARTY-NOTICES.txt),
+and each release ships that file and `LGPL-2.1.txt` next to the `.hex` files.
+
+Besides that, this repository contains the following third-party files.
+
+### Fusion Pixel Font (Chinese glyphs of the OLED), SIL Open Font License 1.1
+
+- `tools/oled/fonts/fusion-pixel-12px-zh_hans-subset.bdf` holds only the Chinese characters the
+  OLED uses, cut unchanged out of **Fusion Pixel Font** 12px monospaced zh_hans, release
+  `2026.09.25`, Copyright (c) 2022, TakWolf (<https://github.com/TakWolf/fusion-pixel-font>).
+- Those glyphs come from **Ark Pixel Font**, Copyright (c) 2021, TakWolf, and, for 惑 and 紫,
+  from **Cubic 11**, which builds on JF Dot M+H 12 (Copyright (c) 2005 M+ FONTS PROJECT) and the
+  M+ bitmap fonts (Copyright (C) 2002-2004 COZ).
+- All of them are under the SIL Open Font License 1.1, with no Reserved Font Name. The license
+  texts are in `tools/oled/fonts/OFL.txt` and `tools/oled/fonts/LICENSES/`.
+- `tools/oled/gen_assets.py` turns the subset into bitmaps in
+  `ExternalDevices/Displays/SoftAssets.cpp`, so the glyphs are **compiled into every `.hex`**.
+  Each release ships the three license texts next to the `.hex` files
+  (`OFL-1.1-fusion-pixel-font.txt`, `OFL-1.1-ark-pixel-font.txt`, `OFL-1.1-cubic-11-font.txt`),
+  together with `THIRD-PARTY-NOTICES.txt`.
+  The OFL covers the font, including the `softFontCJK` bitmaps generated from it; the rest of
+  the firmware stays under the AGPL-3.0.
+
+### Teensyduino core files in `tools/oledsim/shim/`
+
+The OLED simulator compiles the HUD on a computer against a stand-in for the Teensy 4 Arduino
+core. It's a host-only tool: none of it goes into the `.hex`. A few of its files come from
+PJRC's Teensyduino core (`cores/teensy4`):
+
+- `WString.h`, `WString.cpp`: unmodified copies. Copyright (c) 2009-10 Hernando Barragan,
+  Copyright 2011 Paul Stoffregen. GNU Lesser General Public License 2.1 or later; the notice is
+  kept at the top of each file.
+- `Printable.h`: unmodified copy. Copyright (c) 2011 Adrian McEwen. GNU Lesser General Public
+  License 2.1 or later; the notice is kept at the top of the file.
+- The full text of the GNU LGPL 2.1 is in `tools/oledsim/shim/LGPL-2.1.txt`.
+- `Print.h`, `Print.cpp`: host ports of the core's `Print.h` / `Print.cpp` (same overloads and
+  number formatting, `printf` through `vsnprintf`). Both files start with the notice of the
+  originals:
+
+  > Teensyduino Core Library
+  > http://www.pjrc.com/teensy/
+  > Copyright (c) 2017 PJRC.COM, LLC.
+  >
+  > Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+  > and associated documentation files (the "Software"), to deal in the Software without
+  > restriction, including without limitation the rights to use, copy, modify, merge, publish,
+  > distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the
+  > Software is furnished to do so, subject to the following conditions:
+  >
+  > 1. The above copyright notice and this permission notice shall be included in all copies or
+  > substantial portions of the Software.
+  >
+  > 2. If the Software is incorporated into a build system that allows selection among a list of
+  > target devices, then similar target devices manufactured by PJRC.COM must be included in the
+  > list of target devices and selectable in the same manner.
+  >
+  > THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+  > BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+  > NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+  > DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  > OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+`Arduino.h` also repeats a few short definitions of the core's `wiring.h` (`min`, `max`,
+`constrain`, `map`, under the same PJRC notice) so the simulator does the same math as the
+Teensy. The rest of `tools/oledsim/shim/` (`Wire.h`, `SPI.h`, `oledsim_rt.*` and the small
+helpers, except `LGPL-2.1.txt`) was written for this project and follows the repository's
+license.
+
+### Upstream example assets
+
+Upstream's example models and textures are kept unchanged so its other examples and build
+environments keep compiling. Some depict third-party characters or logos (for example
+`Assets/Models/OBJ/Pikachu.h`, `Spyro.h`, `Creeper.h` and `Assets/Textures/Animated/BadApple.h`,
+`Rick.h`, `Crysis.h`, `PS2.h`, `Gamecube.h`); their rights belong to their owners. None of them
+is compiled into the MochiiTracer `.hex` (`teensy40hub75`).

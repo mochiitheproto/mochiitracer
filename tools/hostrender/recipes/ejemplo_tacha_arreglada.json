@@ -1,0 +1,7 @@
+{
+ "name": "ejemplo_tacha_arreglada",
+ "comment": "TACHA como seguramente se quiso: la boca abierta va por el viseme AH (dict 105), no por NukudeFace::vrc_v_aa (19, no ligado). En firmware: AddParameterFrame(Viseme::MouthShape::AH + 100, 0.7f).",
+ "base": "TACHA",
+ "weights": {"vrc_v_aa": 0.0},
+ "visemes": {"AH": 0.7}
+}

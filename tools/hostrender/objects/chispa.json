@@ -1,0 +1,8 @@
+{
+ "name": "chispa",
+ "comment": "Destello en forma de rombo arriba del ojo, en coords de pixel (panel normal). Se alinea con la cara (sigue el wiggle).",
+ "space": "pixel",
+ "material": [255, 255, 255],
+ "vertices": [[24, 1.0], [26.2, 3.5], [24, 6.0], [21.8, 3.5], [24, 3.5]],
+ "triangles": [[0, 1, 4], [1, 2, 4], [2, 3, 4], [3, 0, 4]]
+}

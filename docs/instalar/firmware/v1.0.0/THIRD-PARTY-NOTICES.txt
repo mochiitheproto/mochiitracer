@@ -1,0 +1,208 @@
+MochiiTracer · Protogen OS - third-party notices for the firmware (.hex)
+=========================================================================
+
+The .hex files of each release are built from this repository, which is under the GNU Affero
+General Public License v3.0 (see LICENSE and NOTICE.md). Each .hex also contains compiled code
+from the components listed below. Their source code is not part of this repository: PlatformIO
+downloads it when you build (see platformio.ini). This file reproduces the notices their
+licenses ask to ship together with binaries, and every release carries it next to the .hex
+files, together with LGPL-2.1.txt and the OFL-1.1-*.txt font licenses.
+
+The complete source code of the firmware is in this repository, and the libraries below are
+published by their authors (PlatformIO registry, GitHub, pjrc.com), so you can change any of
+them and build a new .hex with `pio run -e teensy40hub75`.
+
+
+1. Teensyduino core and libraries (PJRC, Paul Stoffregen)
+---------------------------------------------------------
+
+Teensy 4 Arduino core (cores/teensy4) and the Wire, SPI and EEPROM libraries, from PlatformIO's
+framework-arduinoteensy package. Source: https://github.com/PaulStoffregen/cores and
+https://www.pjrc.com/teensy/td_download.html
+
+Most of the core is under this notice:
+
+    Teensyduino Core Library
+    http://www.pjrc.com/teensy/
+    Copyright (c) 2017 PJRC.COM, LLC.
+
+    Permission is hereby granted, free of charge, to any person obtaining
+    a copy of this software and associated documentation files (the
+    "Software"), to deal in the Software without restriction, including
+    without limitation the rights to use, copy, modify, merge, publish,
+    distribute, sublicense, and/or sell copies of the Software, and to
+    permit persons to whom the Software is furnished to do so, subject to
+    the following conditions:
+
+    1. The above copyright notice and this permission notice shall be
+    included in all copies or substantial portions of the Software.
+
+    2. If the Software is incorporated into a build system that allows
+    selection among a list of target devices, then similar target
+    devices manufactured by PJRC.COM must be included in the list of
+    target devices and selectable in the same manner.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+    NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+    BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+    ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+    CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+
+These parts are under the GNU Lesser General Public License, version 2.1 or (at your option)
+any later version. The full text is in LGPL-2.1.txt:
+
+    - String class (WString): Copyright (c) 2009-10 Hernando Barragan;
+      Copyright 2011, Paul Stoffregen.
+    - Stream class: Copyright (c) 2008 David A. Mellis.
+    - Wire library: Copyright (c) 2006 Nicholas Zambetti.
+    - EEPROM library: Original Copyright (c) 2006 David A. Mellis.
+    - SPI library: Copyright (c) 2010 by Cristian Maglie. Offered under the GNU General Public
+      License version 2 or the GNU Lesser General Public License version 2.1; used here under
+      the LGPL 2.1.
+
+These libraries are distributed WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+for more details.
+
+
+2. Adafruit GFX Library (Adafruit Industries)
+---------------------------------------------
+
+https://github.com/adafruit/Adafruit-GFX-Library
+
+    Software License Agreement (BSD License)
+
+    Copyright (c) 2012 Adafruit Industries.  All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
+
+    - Redistributions of source code must retain the above copyright notice,
+      this list of conditions and the following disclaimer.
+    - Redistributions in binary form must reproduce the above copyright notice,
+      this list of conditions and the following disclaimer in the documentation
+      and/or other materials provided with the distribution.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+    ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+    LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+    CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+    SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+    INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+    CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+    ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+    POSSIBILITY OF SUCH DAMAGE.
+
+
+3. Adafruit SSD1306 and Adafruit APDS9960 Library (Adafruit Industries)
+-----------------------------------------------------------------------
+
+https://github.com/adafruit/Adafruit_SSD1306
+https://github.com/adafruit/Adafruit_APDS9960
+
+Both libraries carry this license:
+
+    Software License Agreement (BSD License)
+
+    Copyright (c) 2012, Adafruit Industries
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
+    1. Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    2. Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+    3. Neither the name of the copyright holders nor the
+    names of its contributors may be used to endorse or promote products
+    derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY
+    EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+4. Adafruit BusIO (Adafruit Industries)
+---------------------------------------
+
+https://github.com/adafruit/Adafruit_BusIO
+
+    The MIT License (MIT)
+
+    Copyright (c) 2017 Adafruit Industries
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+
+
+5. SmartMatrix Library (Pixelmatix)
+-----------------------------------
+
+https://github.com/pixelmatix/SmartMatrix
+
+    SmartMatrix Library
+    Copyright (c) 2020 Louis Beaudoin (Pixelmatix)
+    Copyright (c) 2020 Eric Eason and Louis Beaudoin (Pixelmatix)
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy of
+    this software and associated documentation files (the "Software"), to deal in
+    the Software without restriction, including without limitation the rights to
+    use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+    the Software, and to permit persons to whom the Software is furnished to do so,
+    subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+    FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+    COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+    IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+    CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+6. Fusion Pixel Font (Chinese glyphs of the inner OLED)
+-------------------------------------------------------
+
+The Chinese characters of the OLED are bitmaps of Fusion Pixel Font 12px zh_hans
+(Copyright (c) 2022, TakWolf), whose glyphs come from Ark Pixel Font (Copyright (c) 2021,
+TakWolf) and Cubic 11 (built on JF Dot M+H 12, Copyright (c) 2005 M+ FONTS PROJECT, and the M+
+bitmap fonts, Copyright (C) 2002-2004 COZ). They are under the SIL Open Font License 1.1: see
+OFL-1.1-fusion-pixel-font.txt, OFL-1.1-ark-pixel-font.txt and OFL-1.1-cubic-11-font.txt.
+
+
+7. Compiler runtime
+-------------------
+
+The .hex also contains small parts of the C/C++ runtime of the GNU Arm toolchain that PlatformIO
+uses (libgcc and libstdc++, under the GPL v3 with the GCC Runtime Library Exception, and the
+newlib C library, under the licenses listed in its COPYING.NEWLIB file).

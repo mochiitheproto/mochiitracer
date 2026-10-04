@@ -1,0 +1,188 @@
+{
+ "description": "Extra states (s17-s22) + edge cases (x01-x14) for the final OLED design (mochii's set).",
+ "init_ms": 0,
+ "loop_hz": 120,
+ "render_ms": 4,
+ "defaults": {
+  "menu": "Faces",
+  "face": "DEFAULT",
+  "millis": 10000,
+  "mask": "auto",
+  "temp": 46.0,
+  "booped": false,
+  "fps": 60,
+  "phases": true,
+  "values": {
+   "Bright": 3,
+   "AccentBright": 5,
+   "Microphone": 0,
+   "MicLevel": 5,
+   "BoopSensor": 1,
+   "SpectrumMirror": 1,
+   "FaceSize": 9,
+   "Color": 2,
+   "HueF": 5,
+   "HueB": 2,
+   "EffectS": 0,
+   "FanSpeed": 9
+  }
+ },
+ "states": [
+  {
+   "name": "s17_idle_warm_60C",
+   "temp": 60.0,
+   "mask": "cara00_0.txt",
+   "phase_window": 2000
+  },
+  {
+   "name": "s18_idle_hot_72C",
+   "temp": 72.0,
+   "mask": "cara00_0.txt",
+   "gif": true,
+   "gif_ms": 3200
+  },
+  {
+   "name": "s19_idle_veryhot_85C",
+   "temp": 85.0,
+   "mask": "cara00_0.txt",
+   "gif": true,
+   "gif_ms": 1600
+  },
+  {
+   "name": "s20_idle_bsod",
+   "face": "BSOD",
+   "mask": "none"
+  },
+  {
+   "name": "s22_face_change",
+   "face": "DEFAULT",
+   "mask": "cara00_0.txt",
+   "millis": 9850,
+   "phase_window": 1500,
+   "gif": true,
+   "gif_ms": 2600,
+   "events": [
+    {
+     "t": 9800,
+     "face": "AMOR",
+     "mask": "cara17_0.txt"
+    }
+   ]
+  },
+  {
+   "name": "x01_face_change_sparkles",
+   "face": "DEFAULT",
+   "mask": "cara00_0.txt",
+   "millis": 9850,
+   "phase_window": 1500,
+   "events": [
+    {
+     "t": 9800,
+     "face": "DEAD",
+     "mask": "cara16_0.txt"
+    }
+   ]
+  },
+  {
+   "name": "x02_edit_brillo_hot_72C",
+   "menu": "Bright",
+   "temp": 72.0,
+   "phase_window": 2000
+  },
+  {
+   "name": "x03_edit_abanicos_veryhot_85C",
+   "menu": "FanSpeed",
+   "temp": 85.0,
+   "phase_window": 1000
+  },
+  {
+   "name": "x04_cooling_67C_still_on",
+   "temp": 72.0,
+   "mask": "cara00_0.txt",
+   "millis": 12000,
+   "events": [
+    {
+     "t": 11000,
+     "temp": 67.0
+    }
+   ],
+   "phase_window": 2000
+  },
+  {
+   "name": "x05_cooled_64C_off",
+   "temp": 72.0,
+   "mask": "cara00_0.txt",
+   "millis": 12000,
+   "events": [
+    {
+     "t": 11000,
+     "temp": 64.0
+    }
+   ],
+   "phase_window": 2000
+  },
+  {
+   "name": "x06_back_from_menu",
+   "menu": "Bright",
+   "mask": "cara00_0.txt",
+   "millis": 9900,
+   "phase_window": 2500,
+   "gif": true,
+   "gif_ms": 2600,
+   "events": [
+    {
+     "t": 9800,
+     "menu": "Faces"
+    }
+   ]
+  },
+  {
+   "name": "x07_kaomoji_cycle",
+   "face": "KAOMOJI",
+   "mask": "none",
+   "phase_window": 1200,
+   "gif": true,
+   "gif_ms": 3200
+  },
+  {
+   "name": "x08_audio1_silent",
+   "face": "AUDIO1",
+   "mask": "none"
+  },
+  {
+   "name": "x09_audio2_silent",
+   "face": "AUDIO2",
+   "mask": "none"
+  },
+  {
+   "name": "x10_face_out_of_range",
+   "face": 25,
+   "mask": "cara00_0.txt"
+  },
+  {
+   "name": "x11_drift_widest_name",
+   "face": "BSOD",
+   "mask": "none",
+   "millis": 370000
+  },
+  {
+   "name": "x12_drift_veryhot",
+   "temp": 85.0,
+   "mask": "cara00_0.txt",
+   "millis": 130000,
+   "phase_window": 800
+  },
+  {
+   "name": "x13_boot",
+   "millis": 0,
+   "phases": false,
+   "gif": true,
+   "gif_ms": 5000
+  },
+  {
+   "name": "x14_boot_loading",
+   "millis": 2000,
+   "phase_window": 400
+  }
+ ]
+}

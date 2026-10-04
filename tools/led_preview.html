@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Protogen LED Previewer · 64×32</title>
+<style>
+  :root {
+    --bg-0: #0a0a0e;
+    --bg-1: #15151c;
+    --bg-2: #1d1d28;
+    --accent: #ff8c1a;
+    --accent-glow: rgba(255, 140, 26, 0.35);
+    --text: #e6e6e6;
+    --text-dim: #888;
+    --border: rgba(255, 255, 255, 0.08);
+    --safe-zone: #ffd700;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--bg-0);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+  }
+  body {
+    background: radial-gradient(ellipse at top, rgba(255, 140, 26, 0.06), transparent 60%), var(--bg-0);
+    padding: 32px 24px;
+  }
+  header {
+    max-width: 1400px; margin: 0 auto 32px;
+  }
+  header h1 {
+    font-size: 28px; font-weight: 700; letter-spacing: -0.02em;
+    background: linear-gradient(90deg, #fff, var(--accent));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  header p { color: var(--text-dim); margin-top: 4px; font-size: 13px; }
+
+  main {
+    max-width: 1400px; margin: 0 auto;
+    display: grid; gap: 20px;
+  }
+
+  .glass {
+    background: linear-gradient(135deg, var(--bg-1), var(--bg-2));
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    backdrop-filter: blur(8px);
+  }
+
+  .upload-zone {
+    padding: 40px 32px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 2px dashed rgba(255, 140, 26, 0.25);
+  }
+  .upload-zone:hover, .upload-zone.dragover {
+    border-color: var(--accent);
+    box-shadow: 0 0 24px var(--accent-glow);
+  }
+  .upload-zone p { font-size: 16px; margin-bottom: 4px; }
+  .upload-zone small { color: var(--text-dim); }
+  .upload-zone input { display: none; }
+
+  .controls {
+    padding: 18px 24px;
+    display: flex; gap: 24px; align-items: center; flex-wrap: wrap;
+  }
+  .controls label {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px; color: var(--text-dim);
+  }
+  .controls select, .controls input[type=range] {
+    background: var(--bg-0);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+  .controls input[type=range] { padding: 0; }
+  .control-value { color: var(--accent); font-weight: 600; min-width: 40px; }
+  .controls button {
+    background: var(--accent);
+    color: #000;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .controls button:hover { box-shadow: 0 0 16px var(--accent-glow); }
+  .controls button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .preview-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  @media (max-width: 900px) {
+    .preview-grid { grid-template-columns: 1fr; }
+  }
+
+  .panel {
+    padding: 20px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .panel h3 {
+    font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-dim); font-weight: 500;
+  }
+  .panel .meta {
+    font-size: 11px; color: var(--text-dim); font-family: monospace;
+  }
+
+  .canvas-wrap {
+    background: #000;
+    border-radius: 8px;
+    overflow: auto;
+    display: flex; justify-content: center; align-items: center;
+    min-height: 200px;
+    padding: 12px;
+  }
+  .canvas-wrap canvas {
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    max-width: 100%;
+    display: block;
+  }
+
+  .panel-full { grid-column: 1 / -1; }
+
+  .legend {
+    font-size: 11px; color: var(--text-dim);
+    display: flex; gap: 16px; flex-wrap: wrap;
+  }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i {
+    width: 10px; height: 10px; border-radius: 2px; display: inline-block;
+  }
+  .empty-state {
+    text-align: center; color: var(--text-dim); padding: 40px;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Protogen LED Previewer</h1>
+  <p>Subí una imagen o GIF y míralo como saldría en el panel HUB75 64×32. Safe zone marcada en amarillo (X=2..61, Y=2..29).</p>
+</header>
+
+<main>
+  <div class="glass upload-zone" id="dropzone">
+    <input type="file" id="file-input" accept="image/*,.gif">
+    <p>📁 Click o arrastra una imagen / GIF aquí</p>
+    <small>JPG · PNG · GIF (animado) · WEBP</small>
+  </div>
+
+  <div class="glass controls" id="controls" style="display:none">
+    <label>
+      Preset
+      <select id="crop-mode">
+        <option value="fit">Fit (con bandas)</option>
+        <option value="cover" selected>Cover (rellena, recorta)</option>
+      </select>
+    </label>
+    <button id="reset-crop">↺ Reset crop</button>
+    <label>
+      LED size <input type="range" id="led-size" min="6" max="24" value="14">
+      <span class="control-value" id="led-size-value">14</span>
+    </label>
+    <label>
+      Show safe zone <input type="checkbox" id="show-safe" checked>
+    </label>
+    <label>
+      <input type="checkbox" id="dither">
+      Dither (Floyd-Steinberg)
+    </label>
+    <button id="play-btn" disabled>▶ Play GIF</button>
+    <span class="meta" id="frame-info"></span>
+  </div>
+
+  <div class="preview-grid" id="preview-grid" style="display:none">
+    <div class="glass panel">
+      <h3>Original — arrastra el rectángulo / resize en esquinas</h3>
+      <div class="canvas-wrap"><canvas id="orig-canvas"></canvas></div>
+      <div class="meta" id="orig-meta">—</div>
+    </div>
+    <div class="glass panel">
+      <h3>64×32 raster (1px = 1 LED)</h3>
+      <div class="canvas-wrap"><canvas id="raster-canvas" width="640" height="320"></canvas></div>
+      <div class="meta">Source pa los headers .h. Cada pixel = 1 LED físico.</div>
+    </div>
+    <div class="glass panel panel-full">
+      <h3>LED simulation — como se vería en la cabeza protogen</h3>
+      <div class="canvas-wrap"><canvas id="sim-canvas"></canvas></div>
+      <div class="legend">
+        <span><i style="background:#2a2a2a;border-radius:50%"></i> LED apagado</span>
+        <span><i style="background:#fff;border-radius:50%;box-shadow:0 0 8px #fff"></i> LED encendido (con glow)</span>
+        <span><i style="background:transparent;border:1px dashed var(--safe-zone)"></i> Safe zone (60×28 LEDs)</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="glass panel" id="empty" style="text-align:center; color:var(--text-dim); padding:40px">
+    Sube algo arriba para ver el preview ↑
+  </div>
+</main>
+
+<script src="https://unpkg.com/gifuct-js@2.1.2/dist/gifuct-js.js"></script>
+<script>
+const PANEL_W = 64;
+const PANEL_H = 32;
+const PANEL_ASPECT = PANEL_W / PANEL_H;  // 2.0
+const SAFE = { x: 2, y: 2, w: 60, h: 28 };
+const HANDLE_SIZE = 10;  // px in canvas (display) coordinates
+
+const els = {
+  dropzone: document.getElementById('dropzone'),
+  fileInput: document.getElementById('file-input'),
+  controls: document.getElementById('controls'),
+  cropMode: document.getElementById('crop-mode'),
+  resetCrop: document.getElementById('reset-crop'),
+  ledSize: document.getElementById('led-size'),
+  ledSizeValue: document.getElementById('led-size-value'),
+  showSafe: document.getElementById('show-safe'),
+  dither: document.getElementById('dither'),
+  playBtn: document.getElementById('play-btn'),
+  frameInfo: document.getElementById('frame-info'),
+  origCanvas: document.getElementById('orig-canvas'),
+  rasterCanvas: document.getElementById('raster-canvas'),
+  simCanvas: document.getElementById('sim-canvas'),
+  origMeta: document.getElementById('orig-meta'),
+  previewGrid: document.getElementById('preview-grid'),
+  empty: document.getElementById('empty'),
+};
+
+let state = {
+  frames: [],          // [{ canvas, delay }]
+  current: 0,
+  playing: false,
+  timer: null,
+  crop: { x: 0, y: 0, w: 0, h: 0 },  // in source-pixel coords
+  canvasScale: 1,      // scale factor source → orig canvas display
+  drag: null,          // { mode: 'move' | 'tl' | 'tr' | 'bl' | 'br', startMouse, startCrop }
+};
+
+// ---- File loading ----
+
+els.dropzone.addEventListener('click', () => els.fileInput.click());
+els.fileInput.addEventListener('change', e => loadFile(e.target.files[0]));
+
+['dragover', 'dragenter'].forEach(evt => {
+  els.dropzone.addEventListener(evt, e => {
+    e.preventDefault(); els.dropzone.classList.add('dragover');
+  });
+});
+['dragleave', 'dragend', 'drop'].forEach(evt => {
+  els.dropzone.addEventListener(evt, e => {
+    e.preventDefault(); els.dropzone.classList.remove('dragover');
+  });
+});
+els.dropzone.addEventListener('drop', e => {
+  e.preventDefault();
+  if (e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]);
+});
+
+async function loadFile(file) {
+  if (!file) return;
+  stopPlayback();
+  state.frames = [];
+  state.current = 0;
+
+  const isGif = file.type === 'image/gif' || file.name.toLowerCase().endsWith('.gif');
+  if (isGif) {
+    await loadGif(file);
+  } else {
+    await loadStatic(file);
+  }
+  showPreview(file);
+}
+
+async function loadStatic(file) {
+  const url = URL.createObjectURL(file);
+  const img = await loadImage(url);
+  const canvas = document.createElement('canvas');
+  canvas.width = img.width; canvas.height = img.height;
+  canvas.getContext('2d').drawImage(img, 0, 0);
+  state.frames = [{ canvas, delay: 0 }];
+  URL.revokeObjectURL(url);
+}
+
+async function loadGif(file) {
+  const buf = await file.arrayBuffer();
+  const gif = window.gifuct.parseGIF(buf);
+  const frames = window.gifuct.decompressFrames(gif, true);
+
+  const W = gif.lsd.width;
+  const H = gif.lsd.height;
+
+  const composite = document.createElement('canvas');
+  composite.width = W; composite.height = H;
+  const cctx = composite.getContext('2d');
+
+  let prev = null;
+  state.frames = frames.map(f => {
+    const patch = document.createElement('canvas');
+    patch.width = f.dims.width; patch.height = f.dims.height;
+    patch.getContext('2d').putImageData(
+      new ImageData(new Uint8ClampedArray(f.patch), f.dims.width, f.dims.height),
+      0, 0
+    );
+
+    if (f.disposalType === 3 && prev) cctx.putImageData(prev, 0, 0);
+    if (f.disposalType !== 3) prev = cctx.getImageData(0, 0, W, H);
+
+    cctx.drawImage(patch, f.dims.left, f.dims.top);
+
+    const snap = document.createElement('canvas');
+    snap.width = W; snap.height = H;
+    snap.getContext('2d').drawImage(composite, 0, 0);
+
+    if (f.disposalType === 2) {
+      cctx.clearRect(f.dims.left, f.dims.top, f.dims.width, f.dims.height);
+    }
+
+    return { canvas: snap, delay: f.delay || 100 };
+  });
+}
+
+function loadImage(url) {
+  return new Promise((res, rej) => {
+    const img = new Image();
+    img.onload = () => res(img);
+    img.onerror = rej;
+    img.src = url;
+  });
+}
+
+function showPreview(file) {
+  els.empty.style.display = 'none';
+  els.controls.style.display = 'flex';
+  els.previewGrid.style.display = 'grid';
+
+  const f = state.frames[0].canvas;
+  els.origMeta.textContent = `${file.name} · ${f.width}×${f.height} · ${state.frames.length} frame${state.frames.length > 1 ? 's' : ''}`;
+
+  els.playBtn.disabled = state.frames.length <= 1;
+  if (state.frames.length > 1) {
+    els.playBtn.textContent = '▶ Play GIF';
+  }
+
+  setCropPreset(els.cropMode.value);
+  renderAll();
+}
+
+function setCropPreset(mode) {
+  const src = state.frames[0]?.canvas;
+  if (!src) return;
+  const sw = src.width, sh = src.height;
+  const sourceAspect = sw / sh;
+
+  if (mode === 'fit') {
+    // Source fully visible inside crop. Letterbox bands if aspects differ.
+    if (sourceAspect > PANEL_ASPECT) {
+      // Source wider — width matches crop, crop has extra height (bands top/bottom)
+      const cropH = sw / PANEL_ASPECT;
+      state.crop = { x: 0, y: (sh - cropH) / 2, w: sw, h: cropH };
+    } else {
+      // Source taller — height matches crop, crop has extra width
+      const cropW = sh * PANEL_ASPECT;
+      state.crop = { x: (sw - cropW) / 2, y: 0, w: cropW, h: sh };
+    }
+  } else {  // cover
+    // Crop fits inside source, covering panel fully (some source recortado).
+    if (sourceAspect > PANEL_ASPECT) {
+      // Source wider — height matches, width crops
+      const cropW = sh * PANEL_ASPECT;
+      state.crop = { x: (sw - cropW) / 2, y: 0, w: cropW, h: sh };
+    } else {
+      // Source taller — width matches, height crops
+      const cropH = sw / PANEL_ASPECT;
+      state.crop = { x: 0, y: (sh - cropH) / 2, w: sw, h: cropH };
+    }
+  }
+}
+
+// ---- Rendering ----
+
+els.cropMode.addEventListener('change', () => {
+  setCropPreset(els.cropMode.value);
+  renderAll();
+});
+els.resetCrop.addEventListener('click', () => {
+  setCropPreset(els.cropMode.value);
+  renderAll();
+});
+els.showSafe.addEventListener('change', renderAll);
+els.dither.addEventListener('change', renderAll);
+els.ledSize.addEventListener('input', () => {
+  els.ledSizeValue.textContent = els.ledSize.value;
+  renderAll();
+});
+
+els.playBtn.addEventListener('click', togglePlayback);
+
+// ---- Crop interaction (drag/resize on original canvas) ----
+
+function getSourceMousePos(e) {
+  const rect = els.origCanvas.getBoundingClientRect();
+  return {
+    x: (e.clientX - rect.left) / state.canvasScale,
+    y: (e.clientY - rect.top) / state.canvasScale,
+  };
+}
+
+function hitTest(srcPos) {
+  const { x, y, w, h } = state.crop;
+  const tol = HANDLE_SIZE / state.canvasScale;
+  const corners = {
+    tl: { cx: x,     cy: y     },
+    tr: { cx: x + w, cy: y     },
+    bl: { cx: x,     cy: y + h },
+    br: { cx: x + w, cy: y + h },
+  };
+  for (const [name, c] of Object.entries(corners)) {
+    if (Math.abs(srcPos.x - c.cx) < tol && Math.abs(srcPos.y - c.cy) < tol) {
+      return name;
+    }
+  }
+  if (srcPos.x >= x && srcPos.x <= x + w && srcPos.y >= y && srcPos.y <= y + h) {
+    return 'move';
+  }
+  return null;
+}
+
+function cursorFor(mode) {
+  switch (mode) {
+    case 'tl': case 'br': return 'nwse-resize';
+    case 'tr': case 'bl': return 'nesw-resize';
+    case 'move': return 'move';
+    default: return 'default';
+  }
+}
+
+els.origCanvas.addEventListener('mousedown', (e) => {
+  e.preventDefault();
+  const pos = getSourceMousePos(e);
+  const hit = hitTest(pos);
+  if (hit) {
+    state.drag = {
+      mode: hit,
+      startMouse: pos,
+      startCrop: { ...state.crop },
+    };
+  }
+});
+
+window.addEventListener('mousemove', (e) => {
+  // Hover (no drag): update cursor on canvas
+  if (!state.drag) {
+    if (e.target === els.origCanvas) {
+      const pos = getSourceMousePos(e);
+      els.origCanvas.style.cursor = cursorFor(hitTest(pos));
+    }
+    return;
+  }
+
+  e.preventDefault();
+  const pos = getSourceMousePos(e);
+  const drag = state.drag;
+  const dx = pos.x - drag.startMouse.x;
+  const dy = pos.y - drag.startMouse.y;
+  const orig = drag.startCrop;
+
+  if (drag.mode === 'move') {
+    state.crop = { x: orig.x + dx, y: orig.y + dy, w: orig.w, h: orig.h };
+  } else {
+    // Resize: anchor = opposite corner; new size derived from mouse pos
+    let anchorX, anchorY;
+    switch (drag.mode) {
+      case 'tl': anchorX = orig.x + orig.w; anchorY = orig.y + orig.h; break;
+      case 'tr': anchorX = orig.x;          anchorY = orig.y + orig.h; break;
+      case 'bl': anchorX = orig.x + orig.w; anchorY = orig.y;          break;
+      case 'br': anchorX = orig.x;          anchorY = orig.y;          break;
+    }
+    const rawW = Math.max(8, Math.abs(pos.x - anchorX));
+    const rawH = Math.max(4, Math.abs(pos.y - anchorY));
+    // Constrain to 2:1 — pick the larger relative dimension (rectangle "follows" mouse outward)
+    let newW, newH;
+    if (rawW / rawH > PANEL_ASPECT) {
+      newW = rawW; newH = newW / PANEL_ASPECT;
+    } else {
+      newH = rawH; newW = newH * PANEL_ASPECT;
+    }
+    const newX = (drag.mode === 'tl' || drag.mode === 'bl') ? anchorX - newW : anchorX;
+    const newY = (drag.mode === 'tl' || drag.mode === 'tr') ? anchorY - newH : anchorY;
+    state.crop = { x: newX, y: newY, w: newW, h: newH };
+  }
+  renderAll();
+});
+
+window.addEventListener('mouseup', () => {
+  state.drag = null;
+});
+
+function renderAll() {
+  if (!state.frames.length) return;
+  const frame = state.frames[state.current];
+  drawOriginal(frame.canvas);
+  const raster = makeRaster(frame.canvas);
+  drawRaster(raster);
+  drawLEDSim(raster);
+  els.frameInfo.textContent = state.frames.length > 1
+    ? `Frame ${state.current + 1}/${state.frames.length} · ${frame.delay}ms`
+    : '';
+}
+
+function drawOriginal(srcCanvas) {
+  const c = els.origCanvas;
+  const maxW = 600, maxH = 400;
+  const scale = Math.min(maxW / srcCanvas.width, maxH / srcCanvas.height, 1);
+  state.canvasScale = scale;
+  c.width = srcCanvas.width * scale;
+  c.height = srcCanvas.height * scale;
+  const ctx = c.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, c.width, c.height);
+  ctx.drawImage(srcCanvas, 0, 0, c.width, c.height);
+
+  // Dim out everything outside the crop
+  const { x, y, w, h } = state.crop;
+  const cx0 = Math.max(0, x * scale);
+  const cy0 = Math.max(0, y * scale);
+  const cx1 = Math.min(c.width, (x + w) * scale);
+  const cy1 = Math.min(c.height, (y + h) * scale);
+  ctx.fillStyle = 'rgba(0,0,0,0.55)';
+  // four bands around the crop
+  ctx.fillRect(0, 0, c.width, cy0);                                  // top
+  ctx.fillRect(0, cy1, c.width, c.height - cy1);                     // bottom
+  ctx.fillRect(0, cy0, cx0, cy1 - cy0);                              // left
+  ctx.fillRect(cx1, cy0, c.width - cx1, cy1 - cy0);                  // right
+
+  // Crop rectangle (panel bounds)
+  ctx.strokeStyle = 'rgba(255,140,26,0.95)';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(x * scale, y * scale, w * scale, h * scale);
+
+  // Safe zone subset (proportional to crop)
+  if (els.showSafe.checked) {
+    const sx = x + (SAFE.x / PANEL_W) * w;
+    const sy = y + (SAFE.y / PANEL_H) * h;
+    const sw_ = (SAFE.w / PANEL_W) * w;
+    const sh_ = (SAFE.h / PANEL_H) * h;
+    ctx.strokeStyle = 'rgba(255,215,0,0.85)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([5, 3]);
+    ctx.strokeRect(sx * scale, sy * scale, sw_ * scale, sh_ * scale);
+    ctx.setLineDash([]);
+  }
+
+  // Corner handles
+  const hs = HANDLE_SIZE;
+  const corners = [
+    [x * scale,         y * scale        ],
+    [(x + w) * scale,   y * scale        ],
+    [x * scale,         (y + h) * scale  ],
+    [(x + w) * scale,   (y + h) * scale  ],
+  ];
+  ctx.fillStyle = 'rgba(255,140,26,1)';
+  ctx.strokeStyle = '#000';
+  ctx.lineWidth = 1;
+  for (const [hx, hy] of corners) {
+    ctx.fillRect(hx - hs/2, hy - hs/2, hs, hs);
+    ctx.strokeRect(hx - hs/2, hy - hs/2, hs, hs);
+  }
+}
+
+function makeRaster(srcCanvas) {
+  const target = document.createElement('canvas');
+  target.width = PANEL_W; target.height = PANEL_H;
+  const ctx = target.getContext('2d');
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, PANEL_W, PANEL_H);
+
+  const { x, y, w, h } = state.crop;
+  const sw = srcCanvas.width, sh = srcCanvas.height;
+
+  // Clamp source rect to image bounds, map remainder to panel proportionally
+  const sx0 = Math.max(0, x);
+  const sy0 = Math.max(0, y);
+  const sx1 = Math.min(sw, x + w);
+  const sy1 = Math.min(sh, y + h);
+
+  if (sx1 > sx0 && sy1 > sy0) {
+    const swReal = sx1 - sx0;
+    const shReal = sy1 - sy0;
+    const dx = (sx0 - x) / w * PANEL_W;
+    const dy = (sy0 - y) / h * PANEL_H;
+    const dwReal = swReal / w * PANEL_W;
+    const dhReal = shReal / h * PANEL_H;
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(srcCanvas, sx0, sy0, swReal, shReal, dx, dy, dwReal, dhReal);
+  }
+
+  if (els.dither.checked) floydSteinbergDither(ctx);
+  return target;
+}
+
+function floydSteinbergDither(ctx) {
+  // Quantize to 5-bit per channel (32 levels) with FS error diffusion
+  const img = ctx.getImageData(0, 0, PANEL_W, PANEL_H);
+  const d = img.data;
+  const w = PANEL_W, h = PANEL_H;
+  const quant = (v) => Math.round(v / 8) * 8;
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const i = (y * w + x) * 4;
+      for (let c = 0; c < 3; c++) {
+        const old = d[i + c];
+        const nu = Math.max(0, Math.min(255, quant(old)));
+        const err = old - nu;
+        d[i + c] = nu;
+        if (x + 1 < w)            d[i + 4 + c]              = clamp(d[i + 4 + c]              + err * 7 / 16);
+        if (y + 1 < h && x > 0)   d[i + (w - 1) * 4 + c]    = clamp(d[i + (w - 1) * 4 + c]    + err * 3 / 16);
+        if (y + 1 < h)            d[i + w * 4 + c]          = clamp(d[i + w * 4 + c]          + err * 5 / 16);
+        if (y + 1 < h && x + 1 < w) d[i + (w + 1) * 4 + c]  = clamp(d[i + (w + 1) * 4 + c]    + err * 1 / 16);
+      }
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+}
+function clamp(v) { return Math.max(0, Math.min(255, v)); }
+
+function drawRaster(raster) {
+  const c = els.rasterCanvas;
+  const cellPx = 10;
+  c.width = PANEL_W * cellPx;
+  c.height = PANEL_H * cellPx;
+  const ctx = c.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, c.width, c.height);
+  ctx.drawImage(raster, 0, 0, c.width, c.height);
+
+  if (els.showSafe.checked) {
+    ctx.strokeStyle = '#ffd700';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4, 3]);
+    ctx.strokeRect(SAFE.x * cellPx, SAFE.y * cellPx, SAFE.w * cellPx, SAFE.h * cellPx);
+    ctx.setLineDash([]);
+  }
+}
+
+function drawLEDSim(raster) {
+  const ledSize = parseInt(els.ledSize.value, 10);
+  const c = els.simCanvas;
+  c.width = PANEL_W * ledSize;
+  c.height = PANEL_H * ledSize;
+  const ctx = c.getContext('2d');
+
+  // Display body (simula la PCB del HUB75)
+  ctx.fillStyle = '#0e0e10';
+  ctx.fillRect(0, 0, c.width, c.height);
+
+  // Subtle PCB texture grid
+  ctx.fillStyle = '#15151a';
+  for (let y = 0; y < PANEL_H; y++) {
+    for (let x = 0; x < PANEL_W; x++) {
+      ctx.fillRect(x * ledSize + 1, y * ledSize + 1, ledSize - 2, ledSize - 2);
+    }
+  }
+
+  const rctx = raster.getContext('2d');
+  const data = rctx.getImageData(0, 0, PANEL_W, PANEL_H).data;
+
+  // Pass 1: glow halos (drawn under everything)
+  for (let y = 0; y < PANEL_H; y++) {
+    for (let x = 0; x < PANEL_W; x++) {
+      const i = (y * PANEL_W + x) * 4;
+      const r = data[i], g = data[i + 1], b = data[i + 2];
+      const lum = (r + g + b) / 3;
+      if (lum < 8) continue;
+
+      const cx = x * ledSize + ledSize / 2;
+      const cy = y * ledSize + ledSize / 2;
+      const a = Math.min(0.55, lum / 255 * 0.7);
+      const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, ledSize * 0.95);
+      grad.addColorStop(0, `rgba(${r},${g},${b},${a})`);
+      grad.addColorStop(0.5, `rgba(${r},${g},${b},${a * 0.3})`);
+      grad.addColorStop(1, `rgba(${r},${g},${b},0)`);
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(cx, cy, ledSize * 0.95, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  // Pass 2: LED dots
+  for (let y = 0; y < PANEL_H; y++) {
+    for (let x = 0; x < PANEL_W; x++) {
+      const i = (y * PANEL_W + x) * 4;
+      const r = data[i], g = data[i + 1], b = data[i + 2];
+      const cx = x * ledSize + ledSize / 2;
+      const cy = y * ledSize + ledSize / 2;
+      const lum = (r + g + b) / 3;
+
+      if (lum < 8) {
+        ctx.fillStyle = '#222226';
+        ctx.beginPath();
+        ctx.arc(cx, cy, ledSize * 0.18, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        ctx.fillStyle = `rgb(${r},${g},${b})`;
+        ctx.beginPath();
+        ctx.arc(cx, cy, ledSize * 0.30, 0, Math.PI * 2);
+        ctx.fill();
+        // Bright core
+        ctx.fillStyle = `rgba(255,255,255,${Math.min(0.6, lum / 255 * 0.5)})`;
+        ctx.beginPath();
+        ctx.arc(cx - ledSize * 0.05, cy - ledSize * 0.05, ledSize * 0.10, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+  }
+
+  // Safe zone overlay
+  if (els.showSafe.checked) {
+    ctx.strokeStyle = 'rgba(255,215,0,0.65)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([6, 4]);
+    ctx.strokeRect(SAFE.x * ledSize, SAFE.y * ledSize, SAFE.w * ledSize, SAFE.h * ledSize);
+    ctx.setLineDash([]);
+  }
+}
+
+// ---- Animation ----
+
+function togglePlayback() {
+  if (state.playing) stopPlayback();
+  else startPlayback();
+}
+
+function startPlayback() {
+  if (state.frames.length <= 1) return;
+  state.playing = true;
+  els.playBtn.textContent = '⏸ Pause';
+  scheduleNextFrame();
+}
+
+function stopPlayback() {
+  state.playing = false;
+  if (state.timer) clearTimeout(state.timer);
+  state.timer = null;
+  els.playBtn.textContent = '▶ Play GIF';
+}
+
+function scheduleNextFrame() {
+  if (!state.playing) return;
+  const delay = state.frames[state.current].delay || 100;
+  state.timer = setTimeout(() => {
+    state.current = (state.current + 1) % state.frames.length;
+    renderAll();
+    scheduleNextFrame();
+  }, delay);
+}
+</script>
+</body>
+</html>

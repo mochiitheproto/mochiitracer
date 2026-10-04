@@ -1,0 +1,611 @@
+/*
+ * style.css - MochiiTracer · Protogen OS firmware installer.
+ * Part of MochiiTracer, a fork of ProtoTracer by coelacant1. GNU AGPL-3.0.
+ */
+
+:root {
+    --paper: #eef1f4;
+    --surface: #ffffff;
+    --ink: #16202b;
+    --muted: #586474;
+    --line: #cfd6de;
+    --accent: #00727e;
+    --accent-ink: #ffffff;
+    --accent-soft: #d3ecef;
+    --shell: #dfe4ea;
+    --shell-edge: #c3cbd4;
+    --visor: #05080c;
+    --ok: #1b7a48;
+    --warn: #865700;
+    --warn-bg: #fbefd3;
+    --err: #b3263a;
+    --err-bg: #fbe4e7;
+    --log-bg: #0a0f14;
+    --log-ink: #c4ecef;
+
+    --font: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Helvetica Neue", Arial,
+            "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Source Han Sans SC", sans-serif;
+    --mono: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, "Liberation Mono", "Noto Sans Mono CJK SC", monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --paper: #0f1318;
+        --surface: #161c23;
+        --ink: #e5eaf0;
+        --muted: #9ba7b4;
+        --line: #2c3540;
+        --accent: #46d2db;
+        --accent-ink: #04262a;
+        --accent-soft: #133a41;
+        --shell: #28313b;
+        --shell-edge: #1a2028;
+        --ok: #62d394;
+        --warn: #f1b84f;
+        --warn-bg: #2b2414;
+        --err: #ff7d8c;
+        --err-bg: #301a1e;
+        --log-bg: #070a0e;
+    }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font: 16px/1.55 var(--font);
+    overflow-wrap: break-word;
+}
+
+:lang(zh) body, body:lang(zh) { line-height: 1.7; }
+
+a { color: var(--accent); text-underline-offset: 0.18em; }
+
+:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* ===== Top bar ===== */
+.bar {
+    max-width: 46rem;
+    margin: 0 auto;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.brand {
+    color: var(--ink);
+    font-weight: 650;
+    text-decoration: none;
+}
+
+.langs {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 2px;
+    background: var(--surface);
+}
+
+.langs button {
+    font: inherit;
+    font-size: 0.875rem;
+    border: 0;
+    border-radius: 999px;
+    padding: 4px 12px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+}
+
+.langs button[aria-pressed="true"] {
+    background: var(--ink);
+    color: var(--paper);
+}
+
+/* ===== Hero: the visor ===== */
+main {
+    max-width: 46rem;
+    margin: 0 auto;
+    padding: 0 16px 48px;
+}
+
+.hero { padding-top: 8px; }
+
+.shell {
+    padding: clamp(7px, 1.8vw, 13px);
+    border-radius: clamp(22px, 7vw, 58px);
+    background: linear-gradient(180deg, var(--shell), var(--shell-edge));
+}
+
+#visor {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 136.2 / 36.4;
+    border-radius: clamp(16px, 5.6vw, 46px);
+    background:
+        radial-gradient(120% 150% at 50% -10%, #17212c 0%, var(--visor) 62%);
+    box-shadow: inset 0 3px 14px rgba(0, 0, 0, 0.65);
+}
+
+h1 {
+    margin: 1.6rem 0 0.5rem;
+    font-size: clamp(1.9rem, 1.25rem + 2.6vw, 2.75rem);
+    line-height: 1.12;
+    font-weight: 760;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+}
+
+.lead {
+    margin: 0;
+    max-width: 36em;
+    font-size: 1.125rem;
+    color: var(--muted);
+}
+
+/* ===== Facts ===== */
+.facts {
+    margin: 2rem 0 0;
+    padding-top: 1.1rem;
+    border-top: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.6rem 2rem;
+}
+
+.fact h2 {
+    margin: 0 0 0.2rem;
+    font-size: 1rem;
+    font-weight: 650;
+}
+
+.fact p {
+    margin: 0;
+    font-size: 0.9375rem;
+    color: var(--muted);
+}
+
+.fact.linux {
+    grid-column: 1 / -1;
+    margin-top: 0.6rem;
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--line);
+}
+
+details > summary {
+    cursor: pointer;
+    list-style-position: inside;
+}
+
+details > summary h2 { display: inline; }
+
+.fact.linux > p { margin-top: 0.4rem; }
+
+.note {
+    font-size: 0.875rem;
+    color: var(--muted);
+}
+
+.rules { margin-top: 0.4rem; }
+.rules > summary { font-size: 0.9375rem; color: var(--muted); }
+
+.code {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 0.6rem 0;
+    padding: 8px 8px 8px 0;
+    border-radius: 10px;
+    background: var(--log-bg);
+    color: var(--log-ink);
+}
+
+.code pre {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    padding: 4px 0 4px 14px;
+    overflow-x: auto;
+    font: 0.8125rem/1.6 var(--mono);
+    white-space: pre;
+}
+
+.copy {
+    flex: none;
+    font: inherit;
+    font-size: 0.8125rem;
+    padding: 3px 10px;
+    border-radius: 6px;
+    border: 1px solid rgba(196, 236, 239, 0.35);
+    background: transparent;
+    color: var(--log-ink);
+    cursor: pointer;
+}
+
+/* ===== Steps ===== */
+.steps {
+    list-style: none;
+    margin: 2.5rem 0 0;
+    padding: 0;
+}
+
+.step {
+    position: relative;
+    display: grid;
+    grid-template-columns: 2.5rem minmax(0, 1fr);
+    gap: 0 1rem;
+    padding-bottom: 2rem;
+}
+
+.step::before {
+    content: "";
+    position: absolute;
+    left: calc(1.25rem - 1px);
+    top: 2.75rem;
+    bottom: 0.25rem;
+    width: 2px;
+    background: var(--line);
+}
+
+.step:last-child::before { display: none; }
+
+.num {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    border: 2px solid var(--line);
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    color: var(--muted);
+    background: var(--paper);
+}
+
+.step[data-state="active"] .num {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.step[data-state="done"] .num {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--accent-ink);
+}
+
+.step[data-state="done"] .num span { display: none; }
+.step[data-state="done"] .num::after { content: "✓"; }
+
+.body h2 {
+    margin: 0.35rem 0 0.5rem;
+    font-size: 1.25rem;
+    line-height: 1.3;
+    font-weight: 680;
+}
+
+.body > p { margin: 0 0 0.9rem; max-width: 38em; }
+
+.help {
+    margin: 0.5rem 0 0;
+    font-size: 0.9375rem;
+    color: var(--muted);
+}
+
+.panel { margin-top: 1rem; }
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;   /* labels line up on top even if the controls differ in height */
+    gap: 0.75rem 1.25rem;
+}
+
+.row.tight {
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+}
+
+.label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--muted);
+    padding: 0;
+}
+
+/* a fieldset's legend sits outside its flex box, so it doesn't get the gap: give it by hand */
+legend.label { margin-bottom: 0.3rem; }
+
+select, input[type="number"], .cmd input {
+    font: inherit;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 8px 10px;
+}
+
+select { min-width: 12rem; max-width: 100%; }
+
+/* segmented radio group */
+.seg {
+    display: inline-flex;
+    flex-wrap: wrap;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    background: var(--surface);
+    overflow: hidden;
+}
+
+.seg label {
+    position: relative;
+    padding: 7px 14px;
+    cursor: pointer;
+    color: var(--muted);
+}
+
+.seg label + label { border-left: 1px solid var(--line); }
+
+.seg input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.seg label:has(input:checked) {
+    background: var(--accent-soft);
+    color: var(--ink);
+    font-weight: 600;
+}
+
+.seg label:has(input:focus-visible) {
+    outline: 3px solid var(--accent);
+    outline-offset: -3px;
+}
+
+/* buttons */
+.btn {
+    font: inherit;
+    font-weight: 600;
+    padding: 9px 16px;
+    border-radius: 9px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+    cursor: pointer;
+}
+
+.btn:hover:not(:disabled) { border-color: var(--accent); }
+
+.btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+}
+
+.btn.primary:hover:not(:disabled) { filter: brightness(1.08); }
+
+button:disabled,
+input:disabled,
+select:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+progress {
+    display: block;
+    width: 100%;
+    max-width: 30rem;
+    height: 10px;
+    margin-top: 0.9rem;
+    accent-color: var(--accent);
+}
+
+.drop {
+    display: block;
+    position: relative;
+    padding: 1.6rem 1rem;
+    border: 2px dashed var(--line);
+    border-radius: 12px;
+    text-align: center;
+    color: var(--muted);
+    background: var(--surface);
+    cursor: pointer;
+}
+
+.drop.over,
+.drop:hover { border-color: var(--accent); color: var(--ink); }
+.drop:focus-within { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.drop input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+}
+
+/* messages */
+.msg {
+    margin: 0.8rem 0 0;
+    padding: 0.55rem 0.8rem;
+    border-left: 3px solid var(--line);
+    border-radius: 0 8px 8px 0;
+    background: var(--surface);
+    font-size: 0.9375rem;
+    max-width: 38em;
+}
+
+.msg[data-kind="ok"] { border-left-color: var(--ok); }
+.msg[data-kind="warn"] { border-left-color: var(--warn); background: var(--warn-bg); }
+.msg[data-kind="error"] { border-left-color: var(--err); background: var(--err-bg); }
+.msg a { font-weight: 600; }
+
+.banner { margin-top: 1.2rem; }
+
+.planb {
+    margin-top: 1rem;
+    max-width: 38em;
+}
+
+.planb > summary { font-weight: 600; }
+.planb > p { margin: 0.4rem 0 0; color: var(--muted); }
+
+/* ===== Console ===== */
+.console {
+    margin-top: 0.5rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--line);
+}
+
+.console > summary h2 {
+    font-size: 1.25rem;
+    font-weight: 680;
+}
+
+.console > p { color: var(--muted); max-width: 38em; }
+
+.status {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 2rem;
+    margin: 1.1rem 0;
+}
+
+.status dt {
+    font-size: 0.8125rem;
+    color: var(--muted);
+}
+
+.status dd {
+    margin: 0;
+    font-weight: 650;
+    font-variant-numeric: tabular-nums;
+}
+
+.ctl {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;   /* the label sits on the first line of buttons, even when they wrap */
+    gap: 0.4rem 1rem;
+    margin: 0 0 0.9rem;
+}
+
+.ctl > .label { min-width: 9rem; }
+.ctl > .row { flex: 1 1 18rem; min-width: 0; }   /* stays next to the label and wraps inside */
+.ctl > .help { flex: 0 0 100%; margin: 0; padding-left: 10rem; }   /* under the buttons: label + gap */
+
+.dial {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.dial button {
+    font: inherit;
+    font-variant-numeric: tabular-nums;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 7px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+    cursor: pointer;
+}
+
+.dial button:hover:not(:disabled) { border-color: var(--accent); }
+
+input[type="number"] { width: 5.5rem; }
+
+.tag {
+    font-size: 0.8125rem;
+    color: var(--warn);
+    background: var(--warn-bg);
+    padding: 2px 10px;
+    border-radius: 999px;
+}
+
+.log {
+    height: 16rem;
+    overflow: auto;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: var(--log-bg);
+    color: var(--log-ink);
+    font: 0.8125rem/1.5 var(--mono);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.log .l-tx { color: #8fd0ff; }
+.log .l-ok { color: #7fe3a9; }
+.log .l-err { color: #ff8e9c; }
+
+.check {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0.6rem 0;
+    font-size: 0.9375rem;
+    color: var(--muted);
+}
+
+.cmd {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.cmd input {
+    flex: 1;
+    min-width: 0;
+    font-family: var(--mono);
+}
+
+/* ===== Footer ===== */
+footer {
+    width: min(calc(46rem - 32px), calc(100% - 32px));
+    margin: 0 auto;
+    padding: 1.5rem 0 2.5rem;
+    border-top: 1px solid var(--line);
+    font-size: 0.875rem;
+    color: var(--muted);
+}
+
+footer p { margin: 0 0 0.4rem; max-width: 42em; }
+
+.links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.25rem;
+}
+
+@media (max-width: 560px) {
+    .facts { grid-template-columns: minmax(0, 1fr); }
+    .dial button { width: 1.95rem; height: 2.1rem; }
+    .step { grid-template-columns: 2rem minmax(0, 1fr); gap: 0 0.8rem; }
+    .num { width: 2rem; height: 2rem; font-size: 0.875rem; }
+    .step::before { left: calc(1rem - 1px); top: 2.25rem; }
+    .ctl > .label { min-width: 100%; }
+    .ctl > .help { padding-left: 0; }
+    .langs button { padding: 4px 9px; }
+}

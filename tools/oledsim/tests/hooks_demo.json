@@ -1,0 +1,11 @@
+{
+ "defaults": {"menu": "Faces", "millis": 8000, "values": {"Bright": 3}, "mask": "none"},
+ "states": [
+  {"name": "t1_cool", "face": "KAOMOJI", "temp": 46},
+  {"name": "t2_warm", "face": "DEAD", "temp": 60},
+  {"name": "t3_hot_flash", "face": "OWO", "temp": 85, "booped": true, "fps": 87, "phases": true, "gif": true},
+  {"name": "t4_dim", "face": "HAPPY", "values": {"Bright": 1}},
+  {"name": "t5_events", "face": "DEFAULT", "millis": 9000,
+   "events": [{"t": 8500, "face": "AMOR", "temp": 75}], "phases": true}
+ ]
+}

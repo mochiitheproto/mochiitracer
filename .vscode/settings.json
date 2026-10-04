@@ -1,0 +1,17 @@
+{
+    "files.associations": {
+        "string": "cpp",
+        "initializer_list": "cpp",
+        "utility": "cpp",
+        "limits": "cpp",
+        "array": "cpp",
+        "*.tcc": "cpp",
+        "deque": "cpp",
+        "unordered_map": "cpp",
+        "vector": "cpp",
+        "memory": "cpp",
+        "random": "cpp"
+    },
+    "cmake.configureOnOpen": true,
+    "C_Cpp.errorSquiggles": "disabled"
+}

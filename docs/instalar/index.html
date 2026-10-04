@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<!--
+  MochiiTracer · Protogen OS - web firmware installer (Spanish / English / Simplified Chinese).
+  Adapted from coelacant1's ProtoTracer firmware uploader
+  (https://github.com/coelacant1/ProtoTracer, .docs/prototracer-firmware-uploader.html).
+  Free software under the GNU AGPL-3.0. Source: https://github.com/mochiitheproto/mochiitracer
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <title>Install firmware | MochiiTracer · Protogen OS</title>
+    <meta name="description" content="Install MochiiTracer · Protogen OS on the Teensy 4.0 of your protogen or primagen head, from the browser.">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='4' fill='%2305080c'/%3E%3Ccircle cx='5' cy='6' r='1.6' fill='%233ce7ef'/%3E%3Ccircle cx='11' cy='6' r='1.6' fill='%233ce7ef'/%3E%3Cpath d='M3.5 11h9' stroke='%233ce7ef' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="bar">
+        <a class="brand" href="https://github.com/mochiitheproto/mochiitracer">MochiiTracer · Protogen OS</a>
+        <nav class="langs" aria-label="Page language" data-i18n-attr="aria-label:langNav">
+            <button type="button" data-lang="es" lang="es">Español</button>
+            <button type="button" data-lang="en" lang="en">English</button>
+            <button type="button" data-lang="zh" lang="zh-Hans">中文</button>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="shell">
+                <canvas id="visor" role="img" aria-label="LED visor preview" data-i18n-attr="aria-label:visorLabel"></canvas>
+            </div>
+            <h1 data-i18n="h1">Install the firmware on your protogen or primagen</h1>
+            <p class="lead" data-i18n="lead">Put MochiiTracer on the head's Teensy 4.0 straight from your browser, with nothing to install. It takes four steps.</p>
+            <noscript><p class="msg" data-kind="error">This page needs JavaScript.</p></noscript>
+            <p id="msg-compat" class="msg banner" role="alert" hidden></p>
+        </section>
+
+        <section class="facts">
+            <div class="fact">
+                <h2 data-i18n="factBrowserTitle">Chrome or Edge on a computer</h2>
+                <p data-i18n="factBrowser"></p>
+            </div>
+            <div class="fact">
+                <h2 data-i18n="factBrickTitle">You can't brick it</h2>
+                <p data-i18n="factBrick"></p>
+            </div>
+            <details class="fact linux" id="linux">
+                <summary><h2 data-i18n="factLinuxTitle">On Linux? Install the udev rule</h2></summary>
+                <p data-i18n="factLinux"></p>
+                <div class="code">
+                    <pre id="udev-cmd">curl -fsSL https://www.pjrc.com/teensy/00-teensy.rules | sudo tee /etc/udev/rules.d/00-teensy.rules &gt;/dev/null
+sudo udevadm control --reload-rules &amp;&amp; sudo udevadm trigger</pre>
+                    <button type="button" class="copy" data-copy="udev-cmd" data-i18n="copy">Copy</button>
+                </div>
+                <p class="note" data-i18n="factLinuxNote"></p>
+                <details class="rules">
+                    <summary data-i18n="showRules">Show the rule file</summary>
+                    <div class="code">
+                        <pre id="udev-rules"># /etc/udev/rules.d/00-teensy.rules  (PJRC)
+ATTRS{idVendor}=="16c0", ATTRS{idProduct}=="04*", ENV{ID_MM_DEVICE_IGNORE}="1", ENV{ID_MM_PORT_IGNORE}="1"
+ATTRS{idVendor}=="16c0", ATTRS{idProduct}=="04[789a]*", ENV{MTP_NO_PROBE}="1"
+KERNEL=="ttyACM*", ATTRS{idVendor}=="16c0", ATTRS{idProduct}=="04*", MODE:="0666", RUN:="/bin/stty -F /dev/%k raw -echo"
+KERNEL=="hidraw*", ATTRS{idVendor}=="16c0", ATTRS{idProduct}=="04*", MODE:="0666"
+SUBSYSTEMS=="usb", ATTRS{idVendor}=="16c0", ATTRS{idProduct}=="04*", MODE:="0666"
+KERNEL=="hidraw*", ATTRS{idVendor}=="1fc9", ATTRS{idProduct}=="013*", MODE:="0666"
+SUBSYSTEMS=="usb", ATTRS{idVendor}=="1fc9", ATTRS{idProduct}=="013*", MODE:="0666"</pre>
+                        <button type="button" class="copy" data-copy="udev-rules" data-i18n="copy">Copy</button>
+                    </div>
+                    <p class="note"><a href="https://www.pjrc.com/teensy/00-teensy.rules" rel="noopener" data-i18n="linkPjrcRules">The original file on pjrc.com</a></p>
+                </details>
+            </details>
+        </section>
+
+        <ol class="steps">
+            <li class="step" id="step1">
+                <div class="num" aria-hidden="true"><span>1</span></div>
+                <div class="body">
+                    <h2 data-i18n="s1Title">Choose the firmware</h2>
+                    <div class="seg" role="radiogroup">
+                        <label><input type="radio" name="src" value="release" checked> <span data-i18n="srcRelease">Published release</span></label>
+                        <label><input type="radio" name="src" value="local"> <span data-i18n="srcLocal">.hex file from your computer</span></label>
+                    </div>
+
+                    <div id="src-release" class="panel">
+                        <div class="row">
+                            <label class="field">
+                                <span class="label" data-i18n="version">Version</span>
+                                <select id="release" data-busy-lock></select>
+                            </label>
+                            <fieldset class="field">
+                                <legend class="label" data-i18n="species">Species</legend>
+                                <div class="seg">
+                                    <label><input type="radio" name="species" value="protogen"> Protogen</label>
+                                    <label><input type="radio" name="species" value="primagen"> Primagen</label>
+                                </div>
+                            </fieldset>
+                            <fieldset class="field">
+                                <legend class="label" data-i18n="fwLang">Firmware language</legend>
+                                <div class="seg">
+                                    <label lang="es"><input type="radio" name="fwlang" value="es"> Español</label>
+                                    <label lang="en"><input type="radio" name="fwlang" value="en"> English</label>
+                                    <label lang="zh-Hans"><input type="radio" name="fwlang" value="zh"> 中文</label>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <p class="help" data-i18n="speciesHelp"></p>
+                        <p class="help" data-i18n="fwLangHelp"></p>
+                        <p class="help" id="release-info"></p>
+                        <p id="msg-fw" class="msg" role="status" hidden></p>
+                    </div>
+
+                    <div id="src-local" class="panel" hidden>
+                        <label class="drop" id="drop">
+                            <input type="file" id="file" accept=".hex" data-busy-lock>
+                            <span data-i18n="dropHere">Drop a .hex file here or click to choose one</span>
+                        </label>
+                        <p id="msg-local" class="msg" role="status" hidden></p>
+                    </div>
+                </div>
+            </li>
+
+            <li class="step" id="step2">
+                <div class="num" aria-hidden="true"><span>2</span></div>
+                <div class="body">
+                    <h2 data-i18n="s2Title">Put the Teensy in bootloader mode</h2>
+                    <p data-i18n="s2Body"></p>
+                    <button type="button" class="btn primary" id="btn-reboot" data-busy-lock data-i18n="btnReboot">Restart into bootloader</button>
+                    <p id="msg-boot" class="msg" role="status" hidden></p>
+                    <details class="planb">
+                        <summary data-i18n="planBTitle">Didn't work? Use the Teensy's button</summary>
+                        <p data-i18n="planB"></p>
+                    </details>
+                    <p class="help" data-i18n="s2Skip"></p>
+                </div>
+            </li>
+
+            <li class="step" id="step3">
+                <div class="num" aria-hidden="true"><span>3</span></div>
+                <div class="body">
+                    <h2 data-i18n="s3Title">Connect the Teensy</h2>
+                    <p data-i18n="s3Body"></p>
+                    <button type="button" class="btn" id="btn-connect" data-busy-lock data-i18n="btnConnect">Connect Teensy</button>
+                    <p id="msg-dev" class="msg" role="status" hidden></p>
+                </div>
+            </li>
+
+            <li class="step" id="step4">
+                <div class="num" aria-hidden="true"><span>4</span></div>
+                <div class="body">
+                    <h2 data-i18n="s4Title">Install</h2>
+                    <p data-i18n="s4Body"></p>
+                    <button type="button" class="btn primary" id="btn-install" data-busy-lock data-i18n="btnInstall">Install firmware</button>
+                    <progress id="progress" value="0" max="1" hidden></progress>
+                    <p id="msg-flash" class="msg" role="status" hidden></p>
+                </div>
+            </li>
+        </ol>
+
+        <details class="console" id="console">
+            <summary><h2 data-i18n="conTitle">Serial console (optional)</h2></summary>
+            <p data-i18n="conBody"></p>
+            <div class="row">
+                <button type="button" class="btn" id="con-open" data-i18n="conOpen">Open console</button>
+                <button type="button" class="btn" id="con-close" hidden data-i18n="conClose">Close console</button>
+                <button type="button" class="btn" data-cmd="s" data-needs-console data-i18n="cmdStatus">Status</button>
+            </div>
+            <p id="msg-con" class="msg" role="status" hidden></p>
+
+            <dl class="status">
+                <div><dt data-i18n="stFace">Face</dt><dd id="st-face">–</dd></div>
+                <div><dt data-i18n="stBright">Brightness</dt><dd id="st-bright">–</dd></div>
+                <div><dt data-i18n="stTemp">Temperature</dt><dd id="st-temp">–</dd></div>
+                <div><dt data-i18n="stLang">Language</dt><dd id="st-lang">–</dd></div>
+                <div><dt data-i18n="stFps">FPS</dt><dd id="st-fps">–</dd></div>
+            </dl>
+
+            <div class="ctl">
+                <span class="label" data-i18n="cmdBright">Brightness</span>
+                <div class="dial">
+                    <button type="button" data-cmd="b0" data-needs-console>0</button>
+                    <button type="button" data-cmd="b1" data-needs-console>1</button>
+                    <button type="button" data-cmd="b2" data-needs-console>2</button>
+                    <button type="button" data-cmd="b3" data-needs-console>3</button>
+                    <button type="button" data-cmd="b4" data-needs-console>4</button>
+                    <button type="button" data-cmd="b5" data-needs-console>5</button>
+                    <button type="button" data-cmd="b6" data-needs-console>6</button>
+                    <button type="button" data-cmd="b7" data-needs-console>7</button>
+                    <button type="button" data-cmd="b8" data-needs-console>8</button>
+                    <button type="button" data-cmd="b9" data-needs-console>9</button>
+                </div>
+            </div>
+
+            <div class="ctl">
+                <label class="label" for="face-n" data-i18n="cmdFace">Face</label>
+                <div class="row tight">
+                    <input type="number" id="face-n" min="0" max="255" value="0" inputmode="numeric" data-needs-console>
+                    <button type="button" class="btn" id="face-set" data-needs-console data-i18n="cmdSetFace">Set</button>
+                    <button type="button" class="btn" data-cmd="n" data-needs-console data-i18n="cmdNextFace">Next face</button>
+                </div>
+            </div>
+
+            <div class="ctl">
+                <span class="label" data-i18n="cmdLang">Head language</span>
+                <div class="row tight">
+                    <button type="button" class="btn" data-head-lang="es" data-needs-console lang="es">Español</button>
+                    <button type="button" class="btn" data-head-lang="en" data-needs-console lang="en">English</button>
+                    <button type="button" class="btn" data-head-lang="zh" data-needs-console lang="zh-Hans">中文</button>
+                    <button type="button" class="btn" data-head-lang="build" data-needs-console data-i18n="headLangBuild">Language of the .hex</button>
+                    <span class="tag" data-i18n="needsV1">Requires firmware v1 or newer.</span>
+                </div>
+                <p class="help" data-i18n="headLangHelp"></p>
+            </div>
+
+            <div class="log" id="log" role="log" aria-live="off"></div>
+            <label class="check"><input type="checkbox" id="hide-fps" checked> <span data-i18n="hideFps">Hide FPS lines</span></label>
+            <form id="cmd-form" class="cmd">
+                <input id="cmd-input" autocomplete="off" spellcheck="false" maxlength="7" data-needs-console
+                       placeholder="Type a command and press Enter" aria-label="Command"
+                       data-i18n-attr="placeholder:cmdPlaceholder;aria-label:cmdPlaceholder">
+                <button type="submit" class="btn" data-needs-console data-i18n="send">Send</button>
+            </form>
+        </details>
+    </main>
+
+    <footer>
+        <p data-i18n="footCredit">Adapted from coelacant1's ProtoTracer firmware uploader.</p>
+        <p data-i18n="footAuthors">MochiiTracer · Protogen OS, by Juls Denali / Tundra the furr / mochii the protogen.</p>
+        <p data-i18n="footLicense">MochiiTracer and this page are free software under the GNU AGPL-3.0 license. The source code is in the repository.</p>
+        <p class="links">
+            <a href="https://github.com/mochiitheproto/mochiitracer" rel="noopener" data-i18n="linkSource">Source code</a>
+            <a href="https://github.com/coelacant1/ProtoTracer" rel="noopener" data-i18n="linkUpstream">ProtoTracer by coelacant1</a>
+            <a href="https://www.gnu.org/licenses/agpl-3.0.html" rel="noopener license" data-i18n="linkLicense">AGPL-3.0 license</a>
+        </p>
+    </footer>
+
+    <script src="visor.js"></script>
+    <script src="i18n.js"></script>
+    <script src="uploader.js"></script>
+</body>
+</html>

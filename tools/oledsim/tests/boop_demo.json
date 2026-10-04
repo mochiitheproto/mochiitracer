@@ -1,0 +1,13 @@
+{
+ "description": "Self-test of the SetBoopGesture hook (design tests/boop_demo).",
+ "defaults": {"menu": "Faces", "face": "DEFAULT", "mask": "none", "millis": 10700, "boop_at": 10000,
+              "gif": true, "strip": true, "gif_ms": 3000, "values": {"Bright": 3, "BoopSensor": 1}},
+ "states": [
+  {"name": "d1_doble", "boop": "doble"},
+  {"name": "d2_sencillo", "boop": "sencillo"},
+  {"name": "d3_suelta", "boop": "suelta"},
+  {"name": "d4_edges", "boop": [[10000, 1], [10120, 0], [10260, 1], [11300, 0]]},
+  {"name": "d5_apagado", "boop": "doble", "BoopSensor": 0},
+  {"name": "d6_sin_boop", "millis": 8000}
+ ]
+}

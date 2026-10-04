@@ -1,0 +1,234 @@
+{
+ "description": "All 13 menus at their min and max value (menu 0 = faces 0 and 19).",
+ "init_ms": 0,
+ "loop_hz": 120,
+ "render_ms": 4,
+ "defaults": {
+  "menu": "Faces",
+  "face": "DEFAULT",
+  "millis": 10000,
+  "mask": "auto",
+  "temp": 46.0,
+  "booped": false,
+  "fps": 60,
+  "phases": true,
+  "values": {
+   "Bright": 3,
+   "AccentBright": 5,
+   "Microphone": 0,
+   "MicLevel": 5,
+   "BoopSensor": 1,
+   "SpectrumMirror": 1,
+   "FaceSize": 9,
+   "Color": 2,
+   "HueF": 5,
+   "HueB": 2,
+   "EffectS": 0,
+   "FanSpeed": 9
+  }
+ },
+ "states": [
+  {
+   "name": "m00_caras_min",
+   "face": "DEFAULT",
+   "mask": "cara00_0.txt"
+  },
+  {
+   "name": "m00_caras_max",
+   "face": "HAPPY",
+   "mask": "cara19_0.txt"
+  },
+  {
+   "name": "m01_brillo_min",
+   "menu": "Bright",
+   "values": {
+    "Bright": 0
+   },
+   "phase_window": 600
+  },
+  {
+   "name": "m01_brillo_max",
+   "menu": "Bright",
+   "values": {
+    "Bright": 9
+   },
+   "phase_window": 600
+  },
+  {
+   "name": "m02_lados_min",
+   "menu": "AccentBright",
+   "values": {
+    "AccentBright": 0
+   },
+   "phase_window": 600
+  },
+  {
+   "name": "m02_lados_max",
+   "menu": "AccentBright",
+   "values": {
+    "AccentBright": 9
+   },
+   "phase_window": 600
+  },
+  {
+   "name": "m03_micro_min",
+   "menu": "Microphone",
+   "values": {
+    "Microphone": 0
+   },
+   "phase_window": 600
+  },
+  {
+   "name": "m03_micro_max",
+   "menu": "Microphone",
+   "values": {
+    "Microphone": 1
+   },
+   "phase_window": 600
+  },
+  {
+   "name": "m04_sensibilidad_min",
+   "menu": "MicLevel",
+   "values": {
+    "MicLevel": 0
+   },
+   "phase_window": 600
+  },
+  {
+   "name": "m04_sensibilidad_max",
+   "menu": "MicLevel",
+   "values": {
+    "MicLevel": 9
+   },
+   "phase_window": 600
+  },
+  {
+   "name": "m05_boop_min",
+   "menu": "BoopSensor",
+   "values": {
+    "BoopSensor": 0
+   },
+   "phase_window": 600
+  },
+  {
+   "name": "m05_boop_max",
+   "menu": "BoopSensor",
+   "values": {
+    "BoopSensor": 1
+   },
+   "phase_window": 600
+  },
+  {
+   "name": "m06_espejo_min",
+   "menu": "SpectrumMirror",
+   "values": {
+    "SpectrumMirror": 0
+   },
+   "phase_window": 600
+  },
+  {
+   "name": "m06_espejo_max",
+   "menu": "SpectrumMirror",
+   "values": {
+    "SpectrumMirror": 1
+   },
+   "phase_window": 600
+  },
+  {
+   "name": "m07_tamano_min",
+   "menu": "FaceSize",
+   "values": {
+    "FaceSize": 0
+   },
+   "phase_window": 600
+  },
+  {
+   "name": "m07_tamano_max",
+   "menu": "FaceSize",
+   "values": {
+    "FaceSize": 9
+   },
+   "phase_window": 600
+  },
+  {
+   "name": "m08_color_min",
+   "menu": "Color",
+   "values": {
+    "Color": 0
+   },
+   "phase_window": 600
+  },
+  {
+   "name": "m08_color_max",
+   "menu": "Color",
+   "values": {
+    "Color": 9
+   },
+   "phase_window": 600
+  },
+  {
+   "name": "m09_tono_frente_min",
+   "menu": "HueF",
+   "values": {
+    "HueF": 0
+   },
+   "phase_window": 600
+  },
+  {
+   "name": "m09_tono_frente_max",
+   "menu": "HueF",
+   "values": {
+    "HueF": 9
+   },
+   "phase_window": 600
+  },
+  {
+   "name": "m10_tono_fondo_min",
+   "menu": "HueB",
+   "values": {
+    "HueB": 0
+   },
+   "phase_window": 600
+  },
+  {
+   "name": "m10_tono_fondo_max",
+   "menu": "HueB",
+   "values": {
+    "HueB": 9
+   },
+   "phase_window": 600
+  },
+  {
+   "name": "m11_efecto_min",
+   "menu": "EffectS",
+   "values": {
+    "EffectS": 0
+   },
+   "phase_window": 600
+  },
+  {
+   "name": "m11_efecto_max",
+   "menu": "EffectS",
+   "values": {
+    "EffectS": 9
+   },
+   "phase_window": 600
+  },
+  {
+   "name": "m12_abanicos_min",
+   "menu": "FanSpeed",
+   "values": {
+    "FanSpeed": 0
+   },
+   "phase_window": 600
+  },
+  {
+   "name": "m12_abanicos_max",
+   "menu": "FanSpeed",
+   "values": {
+    "FanSpeed": 9
+   },
+   "phase_window": 600
+  }
+ ]
+}

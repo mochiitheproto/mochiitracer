@@ -1,0 +1,6 @@
+{
+ "name": "ejemplo_objeto",
+ "comment": "Cara default + un objeto extra (objects/chispa.json) definido en pixeles.",
+ "base": "DEFAULT",
+ "objects": ["../objects/chispa.json"]
+}

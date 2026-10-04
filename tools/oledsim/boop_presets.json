@@ -1,0 +1,12 @@
+{
+ "description": "Boop sensor test patterns: the ONE table shared by the simulator (render.py, \"boop\": \"<name>\") and the firmware's serial g<N> (fake finger): gen_boop_presets.py turns it into lib/ProtoTracer/Examples/Protogen/BoopPresets.h, g = that N. pattern = durations in ms, alternating ON/OFF and starting ON (ON = IsBooped() true). After the last ON segment the sensor goes OFF and stays OFF.",
+ "units": "ms",
+ "presets": {
+  "doble":     {"g": 1, "pattern": [150, 150, 1200],                     "expect": ["tap1", "hold", "FIRE"],                 "desc": "boop + boooop: tap, release, hold 1.2 s (fires at 0.8 s of hold)"},
+  "sencillo":  {"g": 2, "pattern": [150],                                "expect": ["tap1", "boop-sencillo"],                "desc": "plain single boop (strangers at a con)"},
+  "doble_tap": {"g": 3, "pattern": [150, 150, 200],                      "expect": ["tap1", "hold", "cancel:solto"],         "desc": "normal double tap: 2nd press let go long before the hold"},
+  "suelta":    {"g": 4, "pattern": [150, 150, 500],                      "expect": ["tap1", "hold", "cancel:solto"],         "desc": "almost: 2nd press let go at 0.5 s (hold needs 0.8 s)"},
+  "abrazo":    {"g": 5, "pattern": [2000],                               "expect": ["cancel:tap-largo"],                     "desc": "hug / resting hand: one 2 s contact"},
+  "seguido":   {"g": 6, "pattern": [150, 150, 1200, 1000, 150, 150, 1200], "expect": ["tap1", "hold", "FIRE", "tap1", "hold", "FIRE"], "desc": "doble, 1 s quiet, doble again (two face changes)"}
+ }
+}

@@ -1,0 +1,211 @@
+{
+ "description": "Every face at idle (masks: real captures where they exist, none for image slots) + the hot light over every live face.",
+ "init_ms": 0,
+ "loop_hz": 120,
+ "render_ms": 4,
+ "defaults": {
+  "menu": "Faces",
+  "face": "DEFAULT",
+  "millis": 10000,
+  "mask": "auto",
+  "temp": 46.0,
+  "booped": false,
+  "fps": 60,
+  "phases": true,
+  "values": {
+   "Bright": 3,
+   "AccentBright": 5,
+   "Microphone": 0,
+   "MicLevel": 5,
+   "BoopSensor": 1,
+   "SpectrumMirror": 1,
+   "FaceSize": 9,
+   "Color": 2,
+   "HueF": 5,
+   "HueB": 2,
+   "EffectS": 0,
+   "FanSpeed": 9
+  }
+ },
+ "states": [
+  {
+   "name": "f00_default",
+   "face": "DEFAULT",
+   "phases": false,
+   "mask": "cara00_0.txt"
+  },
+  {
+   "name": "f01_angry",
+   "face": "ANGRY",
+   "phases": false,
+   "mask": "ref_cara01.txt"
+  },
+  {
+   "name": "f02_doubt",
+   "face": "DOUBT",
+   "phases": false,
+   "mask": "ref_cara02.txt"
+  },
+  {
+   "name": "f03_frown",
+   "face": "FROWN",
+   "phases": false,
+   "mask": "ref_cara03.txt"
+  },
+  {
+   "name": "f04_lookup",
+   "face": "LOOKUP",
+   "phases": false,
+   "mask": "ref_cara04.txt"
+  },
+  {
+   "name": "f05_sad",
+   "face": "SAD",
+   "phases": false,
+   "mask": "ref_cara05.txt"
+  },
+  {
+   "name": "f06_bsod",
+   "face": "BSOD",
+   "phases": false,
+   "mask": "none"
+  },
+  {
+   "name": "f07_lowbat",
+   "face": "LOWBAT",
+   "phases": false,
+   "mask": "none"
+  },
+  {
+   "name": "f08_audio1",
+   "face": "AUDIO1",
+   "phases": false,
+   "mask": "none"
+  },
+  {
+   "name": "f09_audio2",
+   "face": "AUDIO2",
+   "phases": false,
+   "mask": "none"
+  },
+  {
+   "name": "f10_tacha",
+   "face": "TACHA",
+   "phases": false,
+   "mask": "ref_cara10.txt"
+  },
+  {
+   "name": "f11_kaomoji",
+   "face": "KAOMOJI",
+   "phases": false,
+   "mask": "none"
+  },
+  {
+   "name": "f14_kp140",
+   "face": "KP140",
+   "phases": false,
+   "mask": "none"
+  },
+  {
+   "name": "f16_dead",
+   "face": "DEAD",
+   "phases": false,
+   "mask": "cara16_0.txt"
+  },
+  {
+   "name": "f17_amor",
+   "face": "AMOR",
+   "phases": false,
+   "mask": "cara17_0.txt"
+  },
+  {
+   "name": "f18_owo",
+   "face": "OWO",
+   "phases": false,
+   "mask": "cara18_0.txt"
+  },
+  {
+   "name": "f19_happy",
+   "face": "HAPPY",
+   "phases": false,
+   "mask": "cara19_0.txt"
+  },
+  {
+   "name": "h00_hot",
+   "face": "DEFAULT",
+   "mask": "cara00_0.txt",
+   "temp": 72.0,
+   "phases": false
+  },
+  {
+   "name": "h01_hot",
+   "face": "ANGRY",
+   "mask": "ref_cara01.txt",
+   "temp": 72.0,
+   "phases": false
+  },
+  {
+   "name": "h02_hot",
+   "face": "DOUBT",
+   "mask": "ref_cara02.txt",
+   "temp": 72.0,
+   "phases": false
+  },
+  {
+   "name": "h03_hot",
+   "face": "FROWN",
+   "mask": "ref_cara03.txt",
+   "temp": 72.0,
+   "phases": false
+  },
+  {
+   "name": "h04_hot",
+   "face": "LOOKUP",
+   "mask": "ref_cara04.txt",
+   "temp": 72.0,
+   "phases": false
+  },
+  {
+   "name": "h05_hot",
+   "face": "SAD",
+   "mask": "ref_cara05.txt",
+   "temp": 72.0,
+   "phases": false
+  },
+  {
+   "name": "h10_hot",
+   "face": "TACHA",
+   "mask": "ref_cara10.txt",
+   "temp": 72.0,
+   "phases": false
+  },
+  {
+   "name": "h16_hot",
+   "face": "DEAD",
+   "mask": "cara16_0.txt",
+   "temp": 72.0,
+   "phases": false
+  },
+  {
+   "name": "h17_hot",
+   "face": "AMOR",
+   "mask": "cara17_0.txt",
+   "temp": 72.0,
+   "phases": false
+  },
+  {
+   "name": "h18_hot",
+   "face": "OWO",
+   "mask": "cara18_0.txt",
+   "temp": 72.0,
+   "phases": false
+  },
+  {
+   "name": "h19_hot",
+   "face": "HAPPY",
+   "mask": "cara19_0.txt",
+   "temp": 72.0,
+   "phases": false
+  }
+ ]
+}

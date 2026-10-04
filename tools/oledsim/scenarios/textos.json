@@ -1,0 +1,356 @@
+{
+ "description": "Every word of the HUD (tools/oled/textos.py): boot, out-of-range face, every setting's label, both sides of every switch, every colour / hue / effect name, and a language change mid-run. Render it per language: ./render.sh <Displays> scenarios/textos.json <out> --lang en (faces.json has the face names).",
+ "init_ms": 0,
+ "loop_hz": 120,
+ "render_ms": 4,
+ "defaults": {
+  "menu": "Faces",
+  "face": "DEFAULT",
+  "millis": 10000,
+  "mask": "auto",
+  "temp": 46.0,
+  "booped": false,
+  "fps": 60,
+  "values": {
+   "Bright": 3,
+   "AccentBright": 5,
+   "Microphone": 0,
+   "MicLevel": 5,
+   "BoopSensor": 1,
+   "SpectrumMirror": 1,
+   "FaceSize": 9,
+   "Color": 2,
+   "HueF": 5,
+   "HueB": 2,
+   "EffectS": 0,
+   "FanSpeed": 9
+  }
+ },
+ "states": [
+  {
+   "name": "t01_boot_os",
+   "millis": 1500
+  },
+  {
+   "name": "t02_boot_hello",
+   "millis": 3500
+  },
+  {
+   "name": "t03_face_out_of_range",
+   "face": 25,
+   "mask": "cara00_0.txt"
+  },
+  {
+   "name": "t04_lang_change",
+   "face": "DEAD",
+   "lang": "es",
+   "millis": 7900,
+   "events": [
+    {
+     "t": 8100,
+     "lang": "en"
+    },
+    {
+     "t": 8500,
+     "lang": "zh"
+    }
+   ],
+   "gif": true,
+   "gif_ms": 1000
+  },
+  {
+   "name": "t10_nivel_brillo",
+   "menu": "Bright",
+   "values": {
+    "Bright": 3
+   }
+  },
+  {
+   "name": "t11_nivel_lados",
+   "menu": "AccentBright",
+   "values": {
+    "AccentBright": 5
+   }
+  },
+  {
+   "name": "t12_nivel_sensibilidad",
+   "menu": "MicLevel",
+   "values": {
+    "MicLevel": 5
+   }
+  },
+  {
+   "name": "t13_nivel_tamano",
+   "menu": "FaceSize",
+   "values": {
+    "FaceSize": 9
+   }
+  },
+  {
+   "name": "t14_nivel_abanicos",
+   "menu": "FanSpeed",
+   "values": {
+    "FanSpeed": 9
+   }
+  },
+  {
+   "name": "t2_micro_no",
+   "menu": "Microphone",
+   "values": {
+    "Microphone": 0
+   }
+  },
+  {
+   "name": "t2_micro_si",
+   "menu": "Microphone",
+   "values": {
+    "Microphone": 1
+   }
+  },
+  {
+   "name": "t2_boop_no",
+   "menu": "BoopSensor",
+   "values": {
+    "BoopSensor": 0
+   }
+  },
+  {
+   "name": "t2_boop_si",
+   "menu": "BoopSensor",
+   "values": {
+    "BoopSensor": 1
+   }
+  },
+  {
+   "name": "t2_espejo_no",
+   "menu": "SpectrumMirror",
+   "values": {
+    "SpectrumMirror": 0
+   }
+  },
+  {
+   "name": "t2_espejo_si",
+   "menu": "SpectrumMirror",
+   "values": {
+    "SpectrumMirror": 1
+   }
+  },
+  {
+   "name": "t3_color_0",
+   "menu": "Color",
+   "values": {
+    "Color": 0
+   }
+  },
+  {
+   "name": "t3_color_1",
+   "menu": "Color",
+   "values": {
+    "Color": 1
+   }
+  },
+  {
+   "name": "t3_color_2",
+   "menu": "Color",
+   "values": {
+    "Color": 2
+   }
+  },
+  {
+   "name": "t3_color_3",
+   "menu": "Color",
+   "values": {
+    "Color": 3
+   }
+  },
+  {
+   "name": "t3_color_4",
+   "menu": "Color",
+   "values": {
+    "Color": 4
+   }
+  },
+  {
+   "name": "t3_color_5",
+   "menu": "Color",
+   "values": {
+    "Color": 5
+   }
+  },
+  {
+   "name": "t3_color_6",
+   "menu": "Color",
+   "values": {
+    "Color": 6
+   }
+  },
+  {
+   "name": "t3_color_7",
+   "menu": "Color",
+   "values": {
+    "Color": 7
+   }
+  },
+  {
+   "name": "t3_color_8",
+   "menu": "Color",
+   "values": {
+    "Color": 8
+   }
+  },
+  {
+   "name": "t3_color_9",
+   "menu": "Color",
+   "values": {
+    "Color": 9
+   }
+  },
+  {
+   "name": "t3_tono_frente_0",
+   "menu": "HueF",
+   "values": {
+    "HueF": 0
+   }
+  },
+  {
+   "name": "t3_tono_frente_1",
+   "menu": "HueF",
+   "values": {
+    "HueF": 1
+   }
+  },
+  {
+   "name": "t3_tono_frente_2",
+   "menu": "HueF",
+   "values": {
+    "HueF": 2
+   }
+  },
+  {
+   "name": "t3_tono_frente_3",
+   "menu": "HueF",
+   "values": {
+    "HueF": 3
+   }
+  },
+  {
+   "name": "t3_tono_frente_4",
+   "menu": "HueF",
+   "values": {
+    "HueF": 4
+   }
+  },
+  {
+   "name": "t3_tono_frente_5",
+   "menu": "HueF",
+   "values": {
+    "HueF": 5
+   }
+  },
+  {
+   "name": "t3_tono_frente_6",
+   "menu": "HueF",
+   "values": {
+    "HueF": 6
+   }
+  },
+  {
+   "name": "t3_tono_frente_7",
+   "menu": "HueF",
+   "values": {
+    "HueF": 7
+   }
+  },
+  {
+   "name": "t3_tono_frente_8",
+   "menu": "HueF",
+   "values": {
+    "HueF": 8
+   }
+  },
+  {
+   "name": "t3_tono_frente_9",
+   "menu": "HueF",
+   "values": {
+    "HueF": 9
+   }
+  },
+  {
+   "name": "t3_efecto_0",
+   "menu": "EffectS",
+   "values": {
+    "EffectS": 0
+   }
+  },
+  {
+   "name": "t3_efecto_1",
+   "menu": "EffectS",
+   "values": {
+    "EffectS": 1
+   }
+  },
+  {
+   "name": "t3_efecto_2",
+   "menu": "EffectS",
+   "values": {
+    "EffectS": 2
+   }
+  },
+  {
+   "name": "t3_efecto_3",
+   "menu": "EffectS",
+   "values": {
+    "EffectS": 3
+   }
+  },
+  {
+   "name": "t3_efecto_4",
+   "menu": "EffectS",
+   "values": {
+    "EffectS": 4
+   }
+  },
+  {
+   "name": "t3_efecto_5",
+   "menu": "EffectS",
+   "values": {
+    "EffectS": 5
+   }
+  },
+  {
+   "name": "t3_efecto_6",
+   "menu": "EffectS",
+   "values": {
+    "EffectS": 6
+   }
+  },
+  {
+   "name": "t3_efecto_7",
+   "menu": "EffectS",
+   "values": {
+    "EffectS": 7
+   }
+  },
+  {
+   "name": "t3_efecto_8",
+   "menu": "EffectS",
+   "values": {
+    "EffectS": 8
+   }
+  },
+  {
+   "name": "t3_efecto_9",
+   "menu": "EffectS",
+   "values": {
+    "EffectS": 9
+   }
+  },
+  {
+   "name": "t3_tono_fondo_2",
+   "menu": "HueB",
+   "values": {
+    "HueB": 2
+   }
+  }
+ ]
+}

@@ -1,0 +1,1 @@
+{"name": "ejemplo_parpadeo", "comment": "Blink a mano: liga Blink al eEA (en firmware lo maneja BlinkTrack)", "link": ["Blink"], "weights": {"Blink": 1.0}}

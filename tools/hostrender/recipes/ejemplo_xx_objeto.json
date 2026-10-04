@@ -1,0 +1,17 @@
+{
+ "name": "ejemplo_xx_objeto",
+ "comment": "x.x versi\u00f3n objeto: morph OjoOculto esconde el ojo + objeto x_ojo (2 barras) encima. M\u00e1s f\u00e1cil de dibujar, +1 Object3D en la escena.",
+ "morphs": [
+  "../morphs/ojo_oculto.json"
+ ],
+ "objects": [
+  "../objects/x_ojo.json"
+ ],
+ "weights": {
+  "OjoOculto": 1.0
+ },
+ "material": [
+  "CPURPLE",
+  0.8
+ ]
+}

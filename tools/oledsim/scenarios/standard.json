@@ -1,0 +1,154 @@
+{
+ "description": "Standard OLED HUD state set (same names for every design). Values = the head's real settings: mic OFF, boop ON, CYAN, size 9, hue 5/2, fans 9, no effect. Masks = real LED captures (cap-caras). Every state except s20 renders _a (frame at millis) and _b (next different frame within phase_window, = _a if static). s20_boot is a GIF of the first 6 s.",
+ "init_ms": 0,
+ "loop_hz": 120,
+ "render_ms": 4,
+ "defaults": {
+  "menu": "Faces",
+  "face": "DEFAULT",
+  "millis": 10000,
+  "mask": "auto",
+  "temp": 46.0,
+  "booped": false,
+  "fps": 60,
+  "phases": true,
+  "values": {
+   "Bright": 3,
+   "AccentBright": 5,
+   "Microphone": 0,
+   "MicLevel": 5,
+   "BoopSensor": 1,
+   "SpectrumMirror": 1,
+   "FaceSize": 9,
+   "Color": 2,
+   "HueF": 5,
+   "HueB": 2,
+   "EffectS": 0,
+   "FanSpeed": 9
+  }
+ },
+ "states": [
+  {
+   "name": "s01_idle_default",
+   "face": "DEFAULT",
+   "mask": "cara00_0.txt",
+   "gif": true
+  },
+  {
+   "name": "s02_idle_dead",
+   "face": "DEAD",
+   "mask": "cara16_0.txt"
+  },
+  {
+   "name": "s03_idle_amor",
+   "face": "AMOR",
+   "mask": "cara17_0.txt"
+  },
+  {
+   "name": "s04_idle_kaomoji",
+   "face": "KAOMOJI",
+   "mask": "none"
+  },
+  {
+   "name": "s05_idle_kp140",
+   "face": "KP140",
+   "mask": "none"
+  },
+  {
+   "name": "s06_edit_brillo_3",
+   "menu": "Bright",
+   "values": {
+    "Bright": 3
+   },
+   "gif": true
+  },
+  {
+   "name": "s07_edit_abanicos_9",
+   "menu": "FanSpeed",
+   "values": {
+    "FanSpeed": 9
+   }
+  },
+  {
+   "name": "s08_edit_micro_off",
+   "menu": "Microphone",
+   "values": {
+    "Microphone": 0
+   }
+  },
+  {
+   "name": "s09_edit_boop_on",
+   "menu": "BoopSensor",
+   "values": {
+    "BoopSensor": 1
+   }
+  },
+  {
+   "name": "s10_edit_color_cyan",
+   "menu": "Color",
+   "values": {
+    "Color": 2
+   }
+  },
+  {
+   "name": "s11_edit_efecto_glitch",
+   "menu": "EffectS",
+   "values": {
+    "EffectS": 4
+   }
+  },
+  {
+   "name": "s12_edit_tono_7",
+   "menu": "HueF",
+   "values": {
+    "HueF": 7
+   }
+  },
+  {
+   "name": "s13_edit_lados_5",
+   "menu": "AccentBright",
+   "values": {
+    "AccentBright": 5
+   }
+  },
+  {
+   "name": "s14_edit_tamano_9",
+   "menu": "FaceSize",
+   "values": {
+    "FaceSize": 9
+   }
+  },
+  {
+   "name": "s15_splash_t1000",
+   "millis": 1000,
+   "phase_window": 600
+  },
+  {
+   "name": "s16_splash_t3500",
+   "millis": 3500,
+   "phase_window": 600
+  },
+  {
+   "name": "s17_temp_60",
+   "temp": 60.0,
+   "gif": true
+  },
+  {
+   "name": "s18_temp_72",
+   "temp": 72.0,
+   "gif": true
+  },
+  {
+   "name": "s19_temp_85",
+   "temp": 85.0,
+   "gif": true
+  },
+  {
+   "name": "s20_boot",
+   "millis": 0,
+   "phases": false,
+   "gif": true,
+   "gif_ms": 6000
+  }
+ ]
+}

@@ -1,0 +1,94 @@
+{
+ "description": "Boop gesture ('boop + boooop' = next face) with the REAL BoopGesture running. Presets in ../boop_presets.json. Each state: main image at millis (mid-hold of 'doble'), GIF + strip of [boop_at-200, boop_at+gif_ms]. Frames ~12 ms like the head (render_ms 12 by default for boop states).",
+ "init_ms": 0,
+ "loop_hz": 120,
+ "defaults": {
+  "menu": "Faces",
+  "face": "DEFAULT",
+  "mask": "auto",
+  "millis": 10700,
+  "boop_at": 10000,
+  "boop": "doble",
+  "temp": 46.0,
+  "booped": false,
+  "fps": 60,
+  "gif": true,
+  "strip": true,
+  "gif_ms": 3500,
+  "values": {
+   "Bright": 3,
+   "AccentBright": 5,
+   "Microphone": 0,
+   "MicLevel": 5,
+   "BoopSensor": 1,
+   "SpectrumMirror": 1,
+   "FaceSize": 9,
+   "Color": 2,
+   "HueF": 5,
+   "HueB": 2,
+   "EffectS": 0,
+   "FanSpeed": 9
+  }
+ },
+ "states": [
+  {
+   "name": "b01_doble"
+  },
+  {
+   "name": "b02_sencillo",
+   "boop": "sencillo"
+  },
+  {
+   "name": "b03_doble_tap",
+   "boop": "doble_tap"
+  },
+  {
+   "name": "b04_suelta",
+   "boop": "suelta"
+  },
+  {
+   "name": "b05_abrazo",
+   "boop": "abrazo"
+  },
+  {
+   "name": "b06_doble_hot72",
+   "temp": 72.0
+  },
+  {
+   "name": "b07_doble_veryhot85",
+   "temp": 85.0
+  },
+  {
+   "name": "b08_doble_amor",
+   "face": "AMOR"
+  },
+  {
+   "name": "b09_doble_en_menu",
+   "menu": "Bright",
+   "values": {
+    "Bright": 3
+   }
+  },
+  {
+   "name": "b10_seguido",
+   "boop": "seguido",
+   "gif_ms": 6000
+  },
+  {
+   "name": "b11_doble_kaomoji",
+   "face": "KAOMOJI",
+   "mask": "none"
+  },
+  {
+   "name": "b12_boop_apagado",
+   "values": {
+    "BoopSensor": 0
+   }
+  },
+  {
+   "name": "b13_doble_tacha",
+   "face": "TACHA",
+   "mask": "ref_cara10.txt"
+  }
+ ]
+}

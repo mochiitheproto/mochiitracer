@@ -1,0 +1,7 @@
+{
+ "name": "ejemplo_xx",
+ "comment": "Ejemplo x.x: el ojo se vuelve X con un morph nuevo (morphs/ojo_x.json). Boca default.",
+ "morphs": ["../morphs/ojo_x.json"],
+ "weights": {"OjoX": 1.0},
+ "material": ["CWHITE", 0.8]
+}

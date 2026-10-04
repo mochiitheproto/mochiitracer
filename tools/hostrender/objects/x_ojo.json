@@ -1,0 +1,62 @@
+{
+ "name": "x_ojo",
+ "space": "pixel",
+ "material": "face",
+ "comment": "X de dos barras (2 quads = 4 tri\u00e1ngulos) en coords de pixel del panel normal, z=0 (delante). material 'face' = mismo MaterialAnimator que la cara.",
+ "vertices": [
+  [
+   35.873,
+   3.023
+  ],
+  [
+   50.873,
+   12.223
+  ],
+  [
+   52.127,
+   10.177
+  ],
+  [
+   37.127,
+   0.977
+  ],
+  [
+   37.127,
+   12.223
+  ],
+  [
+   52.127,
+   3.023
+  ],
+  [
+   50.873,
+   0.977
+  ],
+  [
+   35.873,
+   10.177
+  ]
+ ],
+ "triangles": [
+  [
+   0,
+   1,
+   2
+  ],
+  [
+   0,
+   2,
+   3
+  ],
+  [
+   4,
+   5,
+   6
+  ],
+  [
+   4,
+   6,
+   7
+  ]
+ ]
+}
