@@ -10,7 +10,7 @@
  *  - WebHID upload to the Teensy 4 bootloader (HalfKay): 1088-byte reports
  *    [3 address bytes + 61 zero + 1024 data], blank blocks skipped except the
  *    first, 1.5 s after the first block (erase), 5 ms after the rest,
- *    up to 5 tries per report, final 0xFF 0xFF 0xFF report to reboot.
+ *    final 0xFF 0xFF 0xFF report to reboot.
  *
  * Changes (details in README.md):
  *  - Firmware comes from the mochiitheproto/mochiitracer releases, one .hex per
@@ -18,6 +18,9 @@
  *    no CORS headers, so the page first looks for a same-origin copy in
  *    firmware/<tag>/ and otherwise links the file for a manual download. When
  *    the release lists a SHA-256, the download is checked against it.
+ *  - Fix: a refused report is retried for up to 20 s instead of 5 times in
+ *    0.5 s. HalfKay refuses reports while the erase from the first block runs,
+ *    and over a large old firmware that took longer than the 5 tries.
  *  - Fix: gaps in the HEX keep their address. The original compacted the block
  *    list with filter(), which moves every block after a gap to a wrong address.
  *  - The image is checked before anything is erased: Teensy 4 FlexSPI tag,
@@ -60,6 +63,8 @@
     const BLOCK_SIZE = 1024;
     const REPORT_SIZE = BLOCK_SIZE + 64; // 1088
     const FCFB_TAG = 0x42464346;         // "FCFB", FlexSPI config block at the start of flash
+    const RETRY_BUDGET_MS = 20000;       // per report; a 2 MB erase must fit (see sendReportWithRetries)
+    const RETRY_GAP_MS = 20;
     // Flash size at offset 0x50 of the FlexSPI config (cores/teensy4/bootdata.c) and the
     // usable code size teensy_loader_cli uses for each board.
     const BOARDS = {
@@ -358,7 +363,7 @@
             const plan = planBlocks(firmwarePages);
             for (let n = 0; n < plan.length; n++) {
                 const i = plan[n];
-                const success = await sendReportWithRetries(device, buildReport(i, firmwarePages[i]), 5);
+                const success = await sendReportWithRetries(device, buildReport(i, firmwarePages[i]));
                 if (!success) {
                     throw new Error(`Block upload failed at block index=${i}`);
                 }
@@ -373,7 +378,7 @@
             boot[0] = 0xFF;
             boot[1] = 0xFF;
             boot[2] = 0xFF;
-            await sendReportWithRetries(device, boot, 5);
+            await sendReportWithRetries(device, boot);
 
             await sleep(100);
         } finally {
@@ -382,19 +387,27 @@
     }
 
     /**
-     * Try sending a HID report up to maxRetries times.
+     * Send a HID report, retrying until it goes through or the time runs out.
+     * The first block starts an erase that runs in the background, and while it
+     * lasts HalfKay refuses reports right away (NotAllowedError). The erase grows
+     * with the firmware that was there before (over 2 s for a 550 KB one), so a
+     * fixed number of tries isn't enough; teensy_loader_cli also keeps retrying.
      */
-    async function sendReportWithRetries(device, data, maxRetries=5) {
-        for (let attempt = 0; attempt < maxRetries; attempt++) {
+    async function sendReportWithRetries(device, data, budgetMs = RETRY_BUDGET_MS) {
+        const until = Date.now() + budgetMs;
+        for (let attempt = 1; ; attempt++) {
             try {
                 await device.sendReport(0, data);
+                if (attempt > 1) console.info(`sendReport went through on attempt ${attempt}`);
                 return true;
             } catch (err) {
-                console.warn(`sendReport attempt ${attempt+1} failed`, err);
-                await sleep(100);
+                if (!device.opened || Date.now() >= until) {
+                    console.warn(`sendReport gave up after ${attempt} attempts`, err);
+                    return false;
+                }
+                await sleep(RETRY_GAP_MS);
             }
         }
-        return false;
     }
 
     // "S face=3 FROWN bright=7 ... temp=46.2 ..." -> { face: "3", faceName: "FROWN", bright: "7", ... }

@@ -66,7 +66,7 @@
             readError: "No se pudo leer el archivo.",
 
             s2Title: "Pon el Teensy en modo bootloader",
-            s2Body: "Conecta la cabeza a esta compu con un cable USB de datos (al microUSB del Teensy) y presiona «Reiniciar en modo bootloader» aquí abajo. En la lista que aparece escoge el Teensy: se reinicia y los paneles se congelan o se apagan, eso es normal.",
+            s2Body: "Conecta la cabeza a esta compu con un cable USB de datos (al microUSB del Teensy) y presiona «Reiniciar en modo bootloader» aquí abajo. En la lista que aparece escoge el Teensy (sale como «USB Serial» con su puerto: COM3 o parecido en Windows, ttyACM0 en Linux, cu.usbmodem… en Mac): se reinicia y los paneles se congelan o se apagan, eso es normal.",
             btnReboot: "Reiniciar en modo bootloader",
             planBTitle: "¿No funcionó? Usa el botón del Teensy",
             planB: "Aprieta una vez el botoncito de la placa del Teensy (es el único que tiene). Entra al bootloader sin importar qué firmware traiga, aunque esté trabado. A lo mejor tienes que abrir la cabeza para alcanzarlo.",
@@ -79,7 +79,7 @@
             noSerialApi: "Este navegador no tiene WebSerial: usa el botón del Teensy.",
 
             s3Title: "Conecta el Teensy",
-            s3Body: "Escoge el Teensy en la lista. Puede salir como «Teensy» o como dispositivo desconocido de «Van Ooijen Technische Informatica», dueña del ID USB que usa el Teensy.",
+            s3Body: "Escoge el Teensy en la lista. Se reconoce por el ID USB del bootloader, 16C0:0478: en Windows y Mac sale como «Dispositivo desconocido (16C0:0478)» y en Linux como «HID 16c0:0478».",
             btnConnect: "Conectar Teensy",
             devConnected: "Conectado: {name}.",
             devNotChosen: "No escogiste ningún dispositivo. ¿Ya hiciste el paso 2?",
@@ -191,7 +191,7 @@
             readError: "Couldn't read the file.",
 
             s2Title: "Put the Teensy in bootloader mode",
-            s2Body: "Plug the head into this computer with a USB data cable (into the Teensy's micro-USB) and click “Restart into bootloader” below. Pick the Teensy in the list that pops up: it restarts and the panels freeze or go dark, which is normal.",
+            s2Body: "Plug the head into this computer with a USB data cable (into the Teensy's micro-USB) and click “Restart into bootloader” below. Pick the Teensy in the list that pops up (it shows up as “USB Serial” plus its port: COM3 or similar on Windows, ttyACM0 on Linux, cu.usbmodem… on a Mac): it restarts and the panels freeze or go dark, which is normal.",
             btnReboot: "Restart into bootloader",
             planBTitle: "Didn't work? Use the Teensy's button",
             planB: "Press the tiny pushbutton on the Teensy board once (it's the only one). It enters the bootloader whatever firmware it's running, even a frozen one. You may need to open the head to reach it.",
@@ -204,7 +204,7 @@
             noSerialApi: "This browser has no WebSerial: use the Teensy's button.",
 
             s3Title: "Connect the Teensy",
-            s3Body: "Choose the Teensy in the list. It may show up as “Teensy” or as an unknown device from “Van Ooijen Technische Informatica”, the owner of the USB vendor ID that Teensy uses.",
+            s3Body: "Choose the Teensy in the list. You can spot it by the bootloader's USB ID, 16C0:0478: it shows up as “Unknown Device (16C0:0478)” on Windows and Mac, or as “HID 16c0:0478” on Linux.",
             btnConnect: "Connect Teensy",
             devConnected: "Connected: {name}.",
             devNotChosen: "No device was chosen. Did you do step 2?",
@@ -316,7 +316,7 @@
             readError: "无法读取该文件。",
 
             s2Title: "让 Teensy 进入 Bootloader 模式",
-            s2Body: "用能传数据的 USB 线把头套连到这台电脑（插在 Teensy 的 Micro-USB 口上），然后点击下面的“重启进入 Bootloader”按钮。在弹出的列表里选择 Teensy：它会重启，面板会定格或熄灭，这是正常的。",
+            s2Body: "用能传数据的 USB 线把头套连到这台电脑（插在 Teensy 的 Micro-USB 口上），然后点击下面的“重启进入 Bootloader”按钮。在弹出的列表里选择 Teensy（显示为“USB Serial”加端口名：Windows 上是 COM3 之类，Linux 上是 ttyACM0，Mac 上是 cu.usbmodem…）：它会重启，面板会定格或熄灭，这是正常的。",
             btnReboot: "重启进入 Bootloader",
             planBTitle: "没反应？按 Teensy 上的按钮",
             planB: "按一下 Teensy 板上的小按钮（板上只有这一个）。无论里面是什么固件，哪怕已经卡死，它都会进入 Bootloader。可能需要打开头套才能按到。",
@@ -329,7 +329,7 @@
             noSerialApi: "此浏览器不支持 WebSerial：请按 Teensy 上的按钮。",
 
             s3Title: "连接 Teensy",
-            s3Body: "在列表中选择 Teensy。它可能显示为“Teensy”，也可能显示为来自“Van Ooijen Technische Informatica”的未知设备（Teensy 使用的 USB 厂商 ID 属于这家公司）。",
+            s3Body: "在列表中选择 Teensy。可以通过 Bootloader 的 USB ID 16C0:0478 认出它：Windows 和 Mac 上显示为“未知设备 (16C0:0478)”，Linux 上显示为“HID 16c0:0478”。",
             btnConnect: "连接 Teensy",
             devConnected: "已连接：{name}。",
             devNotChosen: "没有选择设备。第 2 步完成了吗？",
